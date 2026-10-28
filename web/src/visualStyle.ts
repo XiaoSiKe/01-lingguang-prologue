@@ -4,7 +4,7 @@ import { emblemGeometry, emblemPaths } from "./emblemGeometry";
 import type { Profile, VisualStyle } from "./types";
 
 export const visualStyles = [
-  { id: "rhine", label: "莱茵生命风 UI", name: "DELTA CIRCUIT", description: "工业构图 · 三角回路 · 暖白与铜橙" },
+  { id: "rhine", label: "零一 · 黑白机械", name: "FROM ZERO TO ONE", description: "原始银灰徽记 · 机械定位 · 深色留白" },
   { id: "laterano", label: "拉特兰风 UI", name: "CONCORD", description: "几何推演 · 尖拱徽章 · 珠白与冷蓝" },
 ] as const;
 
@@ -41,7 +41,7 @@ export function useVisualStyleEffects() {
   useLayoutEffect(() => {
     document.documentElement.dataset.visualStyle = style;
     const paths = emblemPaths(emblemGeometry(style));
-    if (paths.length) {
+    if (paths.length || style === "rhine") {
       let favicon = document.querySelector<HTMLLinkElement>('link[data-dsh-favicon]');
       if (!favicon) {
         favicon = document.createElement("link");
@@ -53,10 +53,11 @@ export function useVisualStyleEffects() {
       const paper = style === "laterano" ? "#f7f8fb" : "#0a1013";
       const ink = style === "laterano" ? "#1253e5" : "#edf0eb";
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-118 -118 236 236"><path fill="${paper}" d="M-118-118H118V118H-118Z"/><g fill="${ink}" fill-rule="evenodd">${paths.map((path) => `<path d="${path}"/>`).join("")}</g></svg>`;
-      favicon.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+      favicon.href = style === "rhine" ? "/rixin-logo.jpg" : `data:image/svg+xml,${encodeURIComponent(svg)}`;
+      favicon.type = style === "rhine" ? "image/jpeg" : "image/svg+xml";
     }
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (meta) meta.content = style === "laterano" ? "#f7f8fb" : "#efeee8";
+    if (meta) meta.content = style === "laterano" ? "#f7f8fb" : "#0a0a0a";
     const desktop = window as typeof window & {
       __DSH_DESKTOP__?: boolean;
       ipc?: { postMessage?: (message: string) => void };

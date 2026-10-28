@@ -13,6 +13,14 @@ export function Emblem({
   const activeStyle = useVisualStyle();
   const style = visualStyle || activeStyle;
   const geometry = emblemGeometry(style);
+  if (style === "rhine") return (
+    <span
+      className={`dsh-emblem rixin-emblem ${className}`}
+      style={{ width: size, height: size }}
+      role="img"
+      aria-label="零一 AI 日新社原始徽记"
+    />
+  );
   return (
     <svg
       className={`dsh-emblem ${className}`}

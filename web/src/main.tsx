@@ -4,6 +4,7 @@ import { HarnessRoot } from "./HarnessRoot";
 import "./styles.css";
 import "./ui-effects.css";
 import "./laterano-theme.css";
+import "./rixin-theme.css";
 import "../../docs/startup-emblem.js";
 import "../../docs/startup-laterano-emblem.js";
 

@@ -1,0 +1,5 @@
+- insert:
+    - id: rixin-startup-desktop
+      name: dsh-rixin-startup
+      config:
+        desktop: true

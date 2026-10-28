@@ -172,7 +172,7 @@ describe("Settings center", () => {
     render(<SettingsCenter harness={state} onReplay={vi.fn()} onOpenChange={vi.fn()} open />);
     await ready();
     category("外观");
-    expect(screen.getByRole("button", { name: "莱茵生命风 UI" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "零一 · 黑白机械" }).getAttribute("aria-pressed")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "拉特兰风 UI" }));
     expect(await screen.findByRole("alert")).toHaveProperty("textContent", "style write failed");
     expect(readVisualStyle()).toBe("rhine");
@@ -183,7 +183,7 @@ describe("Settings center", () => {
     expect(state.setData).toHaveBeenCalledOnce();
     category("启动动画");
     expect(screen.getByRole("button", { name: "拉特兰风 UI" }).getAttribute("aria-pressed")).toBe("true");
-    expect(readUiPreferences().accent).toBe("#3679af");
+    expect(readUiPreferences().accent).toBe("#b8b8b8");
   });
 
   it("restores Laterano from the saved backend profile when settings is opened again", async () => {

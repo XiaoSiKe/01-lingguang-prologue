@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { ArrowRightIcon, LockClosedIcon } from "@radix-ui/react-icons";
 import { Emblem } from "./Emblem";
+import { useVisualStyle } from "./visualStyle";
 import { errorText, post } from "./api";
 import type { AccessStatus } from "./types";
 
@@ -12,6 +13,7 @@ export function AccessEntry({ status, onUnlocked, connectionError, checking = fa
   onRetry?: () => Promise<void>;
 }) {
   const [password, setPassword] = useState("");
+  const isRixin = useVisualStyle() === "rhine";
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function unlock(event: FormEvent) {
@@ -33,9 +35,9 @@ export function AccessEntry({ status, onUnlocked, connectionError, checking = fa
   }
   return (
     <main className="access-entry">
-      <span className="access-coordinate">DSH / ACCESS CONTROL</span>
+      <span className="access-coordinate">{isRixin ? "零一 / 访问核验" : "DSH / ACCESS CONTROL"}</span>
       <div className="access-entry-frame">
-        <div className="access-entry-brand"><Emblem size={76} /><span>DEEPSEEK HARNESS<small>OPERATOR VERIFICATION</small></span></div>
+        <div className="access-entry-brand"><Emblem size={76} /><span>{isRixin ? "零一 AI 日新社" : "DEEPSEEK HARNESS"}<small>{isRixin ? "FROM ZERO TO ONE" : "OPERATOR VERIFICATION"}</small></span></div>
         <h1>访问身份确认</h1>
         <div className="access-entry-record">
           <div><span>访问身份</span><strong>{status.profile.username}</strong></div>

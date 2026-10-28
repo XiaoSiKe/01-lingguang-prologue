@@ -77,6 +77,7 @@ it.each([
 
 it.each([false, true])("resolves the current system theme at playback entry (dark: %s)", (systemDark) => {
   vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: systemDark })));
+  updateUiPreferences({ theme: "system" });
   // The parent's effect may not have run yet; use the actual media preference
   // rather than copying a stale data-theme value from the previous render.
   document.documentElement.dataset.theme = systemDark ? "light" : "dark";

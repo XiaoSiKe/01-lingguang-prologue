@@ -376,6 +376,10 @@ fn asset(path: &str) -> Option<(&'static str, &'static str)> {
             "text/javascript; charset=utf-8",
             include_str!("../../../docs/startup-preview.js"),
         )),
+        "/startup-mechanics.js" => Some((
+            "text/javascript; charset=utf-8",
+            include_str!("../../../docs/startup-mechanics.js"),
+        )),
         "/startup-sequence.js" => Some((
             "text/javascript; charset=utf-8",
             include_str!("../../../docs/startup-sequence.js"),
@@ -407,6 +411,14 @@ fn asset(path: &str) -> Option<(&'static str, &'static str)> {
         "/startup-laterano.css" => Some((
             "text/css; charset=utf-8",
             include_str!("../../../docs/startup-laterano.css"),
+        )),
+        "/startup-rixin.css" => Some((
+            "text/css; charset=utf-8",
+            include_str!("../../../docs/startup-rixin.css"),
+        )),
+        "/startup-rixin.js" => Some((
+            "text/javascript; charset=utf-8",
+            include_str!("../../../docs/startup-rixin.js"),
         )),
         "/startup-visuals.js" => Some((
             "text/javascript; charset=utf-8",
@@ -458,6 +470,16 @@ fn font_asset(path: &str) -> Option<(&'static str, &'static [u8])> {
         "/assets/fonts/OFL-NotoSansSC.txt" => Some((
             "text/plain; charset=utf-8",
             include_bytes!("../../../docs/assets/fonts/OFL-NotoSansSC.txt"),
+        )),
+        _ => None,
+    }
+}
+
+fn image_asset(path: &str) -> Option<(&'static str, &'static [u8])> {
+    match path.split('?').next().unwrap_or(path) {
+        "/assets/rixin-logo.jpg" => Some((
+            "image/jpeg",
+            include_bytes!("../../../docs/assets/rixin-logo.jpg"),
         )),
         _ => None,
     }
@@ -808,6 +830,7 @@ async fn handle(mut socket: TcpStream, host: Arc<Host>) -> Result<()> {
             if path.starts_with("/api/") { return json_response(&mut socket, 404, json!({"error":"Not found"})).await; }
             if let Some(wav) = audio_asset(path) { return response(&mut socket, 200, "audio/wav", wav).await; }
             if let Some((kind, bytes)) = font_asset(path) { return response(&mut socket, 200, kind, bytes).await; }
+            if let Some((kind, bytes)) = image_asset(path) { return response(&mut socket, 200, kind, bytes).await; }
             if let Some(root) = &host.assets {
                 // The original startup resources remain embedded and available
                 // even when the React asset directory is overridden.

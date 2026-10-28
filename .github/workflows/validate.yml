@@ -1,0 +1,35 @@
+name: Validate Lingguang Prologue
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  opening-and-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check opening, lifecycle, preview server and plugin bridges
+        run: npm test
+      - name: Check the isolated installer
+        run: python3 scripts/test_install_dsh.py
+      - name: Install Web dependencies
+        run: npm ci --prefix web
+      - name: Test Web workbench
+        run: npm --prefix web test
+      - name: Typecheck and build Web workbench
+        run: npm --prefix web run build
+      - name: Build member release artifacts without installing DSH
+        run: python3 scripts/package_rixin_release.py

@@ -18,14 +18,14 @@ const motionMedia=matchMedia('(prefers-reduced-motion: reduce)');
 const motionOverride=new URLSearchParams(location.search).get('motion')==='reduce';
 const reducedMotion={get matches(){return motionOverride||motionMedia.matches;},addEventListener:(...args)=>motionMedia.addEventListener(...args)};
 const phases=[
- ['深潜协议','DEEP DIVE / HARNESS','一道信号，开启新的深度。','SYSTEM / STANDBY'],
+ ['从零到一','ZERO TO ONE / RIXIN AI','从零到一，让技术进步成为每个人的机会！','SYSTEM / STANDBY'],
  ['建立本地连接','LOCAL CONNECTION','连接当前 DSH 工作区。','ACCESS / REQUEST'],
  ['访问身份确认','IDENTITY VERIFICATION','确认身份后，读取本地 skills 与 plugins。','IDENTITY / VERIFY'],
  ['展开能力档案','READING LOCAL CAPABILITIES','直接读取本地 skills 与 plugins。','REQUEST / RECEIVED'],
  ['能力档案就绪','LOCAL LOAD COMPLETE','真实加载结果已返回。','ACCESS / VERIFIED'],
- ['欢迎进入 DSH','WELCOME TO DSH','新的探索，由此开始。','DSH / ONLINE']
+ ['欢迎来到零一','WELCOME TO RIXIN AI','从零到一，让技术进步成为每个人的机会！','DSH / ONLINE']
 ];
-let light=new URLSearchParams(location.search).get('theme')!=='dark',muted=false,speed=1,width=1,height=1,dpr=1;
+let light=new URLSearchParams(location.search).get('theme')==='light',muted=false,speed=1,width=1,height=1,dpr=1;
 let visualStyle=new URLSearchParams(location.search).get('style')==='laterano'?'laterano':'rhine';
 // Authentication hydrates the saved profile more than once. Keep an explicit
 // selection separate until it has been persisted, so those reads cannot undo it.
@@ -39,25 +39,34 @@ function motionStyle(node,key,value){
  if(key.startsWith('--'))node.style.setProperty(key,value);else node.style[key]=value;
 }
 let soundTouched=false,soundInitialized=false;
-let audio=null,master=null,audioSources=[],audioUnavailable=false;
+let audio=null,master=null,mechanics=null,audioSources=[],audioUnavailable=false;
 let phaseAge=0,visiblePhase=-1,starting=false;
 let scenePhase=-1,paintedPhase=-1,paintedProgress=0,paintedAmbientTime=0,sceneAge=0,bookAge=0,bookSource=null,transitionAge=1;
 const smoothStep=value=>{const t=Math.max(0,Math.min(1,value));return t*t*(3-2*t);};
 const entryAnimations=new Map();
-let raf=0,lastFrame=0,generation=0,ambientTime=0,impulse=0,drag=0,manualPause=false,signature='',pointer={x:.5,y:.5},pointerDown=null,embeddedEnded=false;
+let raf=0,lastFrame=0,generation=0,ambientTime=0,impulse=0,drag=0,manualPause=false,signature='',pointer={x:.5,y:.5},pointerDown=null,pointerBounds=null,embeddedEnded=false,pageActive=true;
 const announce=message=>{ui.status.textContent=message;};
 let profileDirty=false,draftRevision=0,localRevision=0,inventorySeen=null,profileSeen=null;
-const local=new DSHLocal.Client({onChange:()=>{localRevision++;renderLocal();refresh();}});
+let localPaintQueued=false;
+const local=new DSHLocal.Client({onChange:()=>{
+ localRevision++;
+ // A discovery packet can contain hundreds of authoritative events. Keep every
+ // model update, then paint its latest snapshot once after that packet is read.
+ if(localPaintQueued)return;
+ localPaintQueued=true;
+ Promise.resolve().then(()=>{localPaintQueued=false;if(!pageActive||embeddedEnded)return;renderLocal();refresh();});
+}});
 const accessBlocked=()=>local.locked||(local.connection!=='local'&&!(local.previewOnly&&!window.DSHEmbed?.embedded));
 const voice=()=>window.DSHVoice;
 let narratedPhase=-1;
 const cancelVoice=()=>{narratedPhase=-1;voice()?.cancel?.();};
 const narrate=()=>{if(narratedPhase===sequence.phase)return;narratedPhase=sequence.phase;voice()?.phase?.(sequence.phase,{username:ui.identityName.value.trim()||local.profile.username,inventory:local.inventory,connection:local.connection,inventoryMode:local.profile.inventory_mode});};
 const loadFinished=()=>['complete','error','unavailable'].includes(local.inventory.status);
-function barriers(){for(let i=0;i<6;i++){if((i===2&&accessBlocked())||(i===3&&!loadFinished())||(i===sequence.phase&&voice()?.busy))sequence.hold(i);else sequence.release(i);}}
+function barriers(){mechanics?.duck(!!voice()?.busy);for(let i=0;i<6;i++){if((i===2&&accessBlocked())||(i===3&&!loadFinished())||(i===sequence.phase&&voice()?.busy))sequence.hold(i);else sequence.release(i);}}
 function beginLocalLoad(){if(!accessBlocked()&&sequence.phase===3&&sequence.playing&&['idle','cancelled'].includes(local.inventory.status))void local.load();}
 ui.seek.max=String(total);ui.totalTime.textContent=total.toFixed(2);
   function stopAudio() {
+    mechanics?.stop();
     for (const source of audioSources) { try { source.stop(); } catch (_) { /* Already ended. */ } }
     audioSources = [];
   }
@@ -90,6 +99,7 @@ ui.seek.max=String(total);ui.totalTime.textContent=total.toFixed(2);
         const Audio = window.AudioContext || window.webkitAudioContext;
         if (!Audio) throw new Error('No Web Audio');
         audio = new Audio(); master = audio.createGain(); master.gain.value = .6; master.connect(audio.destination);
+        mechanics=window.DSHMechanics?new window.DSHMechanics.Engine(audio,master):null;
       }
       if (audio.state === 'suspended') {
         let deadline;
@@ -105,6 +115,7 @@ ui.seek.max=String(total);ui.totalTime.textContent=total.toFixed(2);
   }
 function scorePhase(){
  stopAudio();if(!audio||audio.state!=='running'||muted||!sequence.playing)return;
+ if(visualStyle==='rhine'&&mechanics){mechanics.duck(!!voice()?.busy);mechanics.phase(sequence.phase,{duration:durations[sequence.phase],elapsed:sequence.elapsed,speed});return;}
  const start=audio.currentTime+.02,elapsed=sequence.elapsed;
  const ratio=durations[sequence.phase]/scoreDurations[sequence.phase],audioScale=ratio/speed;
  const event=(local,fn)=>{const position=local*ratio;if(position>=elapsed-.025)fn(start+Math.max(0,position-elapsed)/speed);};
@@ -141,7 +152,7 @@ function scorePhase(){
    event(1.3,t=>{[261.626,329.628,391.995,587.33].forEach((hz,i)=>tone(t+i*.025*audioScale,hz,1.4*audioScale,.047));tone(t,65.406,1.25*audioScale,.16);noise(t,.22*audioScale,.08,2100);});break;
  }
 }
-function clickSound(){if(!audio||audio.state!=='running'||muted)return;const t=audio.currentTime+.01;tone(t,660,.065,.023,'sine',330);}
+function clickSound(){if(!audio||audio.state!=='running'||muted)return;if(visualStyle==='rhine'&&mechanics){mechanics.click();return;}const t=audio.currentTime+.01;tone(t,660,.065,.023,'sine',330);}
 function measureSceneLayout(){
  const origin=pane.getBoundingClientRect();
  const rect=node=>{const r=node.getBoundingClientRect();return{x:r.left-origin.left,y:r.top-origin.top,width:r.width,height:r.height};};
@@ -156,6 +167,7 @@ function measureSceneLayout(){
  }
  sceneLayout={
   heading,
+  hero:$('rxHeroMark')?rect($('rxHeroMark')):null,
   identity:ui.identityCard.hidden?null:{...rect(ui.identityCard),rows:identityRows.map(node=>{const r=rect(node);return{y:r.y,height:r.height};})},
   inventory:ui.inventoryPanel.hidden?null:{...rect(ui.inventoryPanel),columns:inventoryColumns.map(rect)},
   book:null
@@ -207,8 +219,8 @@ function drawScene(){
  motionStyle(ui.inventoryPanel,'--book-open',String(laterano?bookOpen:1));
  motionStyle(transitionCanvas,'opacity',String(laterano&&!reducedMotion.matches?1-smoothStep(transitionAge/.6):0));
  ctx.setTransform(dpr,0,0,dpr,0,0);
- const renderer=laterano&&window.DSHLateranoVisuals?window.DSHLateranoVisuals:DSHVisuals;
- renderer.draw(ctx,width,height,{phase:sequence.phase,progress:sequence.progress,visualProgress:laterano?visualProgress:undefined,bookAge:laterano?bookAge:undefined,bookSource:laterano?bookSource:undefined,bookOpen:laterano?bookOpen:undefined,time:sequence.time,textAge:laterano?(inBook?bookAge:sceneAge):manualPause?sequence.elapsed:Math.max(sequence.elapsed,phaseAge),choice:sequence.choices[Math.min(4,sequence.phase)]||0,light,reducedMotion:reducedMotion.matches,pointer,ambientTime,impulse,drag,waiting:sequence.waiting,identity:ui.identityName.value.trim()||local.profile.username,inventory:local.inventory,layout:sceneLayout});
+ const renderer=laterano&&window.DSHLateranoVisuals?window.DSHLateranoVisuals:(window.DSHRixin||DSHVisuals);
+ renderer.draw(ctx,width,height,{phase:sequence.phase,progress:sequence.progress,visualProgress:laterano?visualProgress:undefined,bookAge:laterano?bookAge:undefined,bookSource:laterano?bookSource:undefined,bookOpen:laterano?bookOpen:undefined,time:sequence.time,textAge:laterano?(inBook?bookAge:sceneAge):manualPause?sequence.elapsed:Math.max(sequence.elapsed,phaseAge),choice:sequence.choices[Math.min(4,sequence.phase)]||0,light,reducedMotion:reducedMotion.matches,pointer,ambientTime,impulse,drag,waiting:sequence.waiting,identity:ui.cardName.textContent||'未读取',inventory:local.inventory,layout:sceneLayout});
  paintedPhase=sequence.phase;paintedProgress=visualProgress;paintedAmbientTime=ambientTime;
 }
 function applyVisualStyle(value){
@@ -241,15 +253,15 @@ function renderLocal(){
  if(profileSeen!==local.profile){
   profileSeen=local.profile;
   if(local.connection==='local')applyVisualStyle(pendingVisualStyle??local.profile.visual_style);
-  if(!profileDirty){ui.identityName.value=local.profile.username;ui.identityId.value=local.profile.badge_id;updateIdentity();}
+  if(!profileDirty){ui.identityName.value=local.connection==='local'?local.profile.username:'';ui.identityId.value=local.connection==='local'?local.profile.badge_id:'';updateIdentity();}
  }
  ui.connectionStatus.textContent=local.connectionMessage;
  setText($('runtimeBadge'),local.profile.runtime==='native'?'NATIVE':'RUST',{kind:'roll',scope:'global'});
  ui.connectLocal.disabled=local.connection==='connecting';
- ui.saveIdentity.disabled=local.saving||local.locked;
+ ui.saveIdentity.disabled=local.saving||local.locked||local.connection!=='local';
  $('visualStyle').disabled=local.saving;
  $('retryStyle').disabled=local.saving||local.locked||local.connection!=='local';
- ui.identityName.disabled=local.locked;ui.identityId.disabled=local.locked;
+ ui.identityName.disabled=local.locked||local.connection!=='local';ui.identityId.disabled=local.locked||local.connection!=='local';
  ui.accessEntry.hidden=!local.locked;ui.accessState.hidden=local.locked;
  ui.accessPassword.disabled=local.unlocking;ui.accessSubmit.disabled=local.unlocking;
  ui.accessRetry.hidden=local.connection!=='unavailable'||!accessBlocked();
@@ -265,10 +277,12 @@ function renderLocal(){
   const result=items.map((item,index)=>{
   const sign=item.status==='loaded'?'＋':item.status==='error'?'!':'−';
   const detail=item.source||(Number.isFinite(item.tool_count)?item.tool_count+' tools':'本地插件');
-  const key=(item.id||item.name)+'\0'+(item.source||'');seen.add(key);
+  const key=item.name+'\0'+(item.source||'');seen.add(key);
   let nodes=cache.get(key);
   if(!nodes){nodes={row:document.createElement('div'),name:document.createElement('span'),source:document.createElement('span')};nodes.row.appendChild(nodes.name);nodes.row.appendChild(nodes.source);cache.set(key,nodes);}
   const {row,name,source}=nodes;
+  const revision=[item.status,item.name,detail,item.message||''].join('\0');
+  if(nodes.revision===revision)return row;nodes.revision=revision;
   row.className='inventory-row';row.setAttribute('data-status',item.status);
   name.className='inventory-name dsh-lettering';name.title=item.name;
   source.className='inventory-source dsh-lettering';source.title=detail+(item.message?' · '+item.message:'');source.setAttribute('aria-label','来源：'+source.title);
@@ -285,7 +299,13 @@ function renderLocal(){
   setText(status,inventory.status==='complete'?'已完成':inventory.stages[kind]==='loading'?'正在读取':inventory.stages[kind]==='complete'?'已返回':inventory.status==='loading'?'等待本地结果':'尚未读取',{kind:'roll',delay:.1});
   textMotion.remove(list);
   const itemRows=rows(items,kind);
-  if(items.length){list.classList.remove('dsh-lettering');list.replaceChildren(...itemRows);}
+  if(items.length){
+   list.classList.remove('dsh-lettering');
+   const current=[...list.children];
+   if(current.length<=itemRows.length&&current.every((row,index)=>row===itemRows[index])){
+    for(let index=current.length;index<itemRows.length;index++)list.appendChild(itemRows[index]);
+   }else list.replaceChildren(...itemRows);
+  }
   else setText(list,inventory.status==='complete'?'此工作区没有加载项目。':inventory.status==='loading'?'等待本地 DSH 返回真实名称…':'未读取真实数据。',{kind:'mask',delay:.1});
  }
  setText(ui.inventoryMessage,inventory.message+(inventory.status==='complete'&&inventory.elapsed_ms!==null?' · '+inventory.elapsed_ms+' ms':''),{kind:'mask'});
@@ -321,6 +341,7 @@ function renderUI(){
  const state=[sequence.phase,sequence.playing,sequence.completed,sequence.waiting,sequence.interactive,manualPause,starting,localRevision,...sequence.choices].join(':');
  if(state!==signature){
   signature=state;
+  window.DSHRixin?.update({phase:sequence.phase,playing:sequence.playing,completed:sequence.completed,starting,locked:local.locked,connection:local.connection});
   document.body.classList.toggle('on-black',sequence.phase===0);document.body.classList.toggle('finale',sequence.phase===5);
   document.body.classList.toggle('inventory-phase',sequence.phase===3||sequence.phase===4);
   document.body.classList.toggle('identity-phase',sequence.phase===2);
@@ -353,7 +374,7 @@ function frame(now){
  impulse=Math.max(0,impulse-delta*1.5);
  const previous=sequence.phase,wasPlaying=sequence.playing;
  barriers();sequence.tick(delta*speed);beginLocalLoad();
- if(sequence.phase!==previous){phaseAge=0;stopAudio();narrate();if(sequence.playing)scorePhase();announce(sequence.waiting?phases[sequence.phase][0]+'。点按任意位置确认。':'进入'+phases[sequence.phase][0]);}
+ if(sequence.phase!==previous){phaseAge=0;stopAudio();narrate();if(sequence.playing)scorePhase();announce(sequence.waiting?phaseCopy()[0]+'。点按任意位置确认。':'进入'+phaseCopy()[0]);}
  if(wasPlaying&&!sequence.playing){stopAudio();if(sequence.completed)announce('深潜就绪。点按任意位置重新体验。');}
  renderUI();drawScene();
  if(sequence.completed&&finishEmbedded('complete'))return;
@@ -362,6 +383,7 @@ function frame(now){
 function wake(){if(!embeddedEnded&&!raf&&!document.hidden){lastFrame=performance.now();raf=requestAnimationFrame(frame);}}
 function refresh(){renderUI();drawScene();wake();}
 function resize(){
+ pointerBounds=null;
  const r=pane.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2.5);
  if(width===r.width&&height===r.height&&dpr===ratio){layoutDirty=true;wake();return;}
  width=r.width;height=r.height;dpr=ratio;
@@ -374,13 +396,13 @@ async function start(){
  const current=++generation;starting=true;manualPause=false;stopAudio();refresh();
  const [ready]=await Promise.all([ensureAudio(),voiceReady,soundTouched?Promise.resolve():local.connect()]);if(current!==generation)return;
  starting=false;if(document.hidden){refresh();return;}
- sequence.play();beginLocalLoad();narrate();barriers();lastFrame=performance.now();if(ready)scorePhase();refresh();announce('开始'+phases[sequence.phase][0]+'。播放中点按可触发扫描波。');
+ sequence.play();beginLocalLoad();narrate();barriers();lastFrame=performance.now();if(ready)scorePhase();refresh();announce('开始'+phaseCopy()[0]+'。播放中点按可触发扫描波。');
 }
 function pause(message='演出已暂停。点按画面继续。'){generation++;starting=false;sequence.pause();manualPause=true;clearTransition();stopAudio();cancelVoice();local.cancelLoad(false);refresh();announce(message);}
 function restart(playNow=false){generation++;starting=false;stopAudio();cancelVoice();sequence.restart();phaseAge=0;manualPause=false;ambientTime=0;impulse=.6;resetSceneMotion();ui.accessPassword.value='';local.resetVerification();local.cancelLoad();refresh();if(playNow||!sequence.interactive)start();else announce('已回到序章。点按任意位置开始。');}
 function requireAccess(){if(sequence.phase!==2)jump(2);if(local.locked)ui.accessPassword.focus({preventScroll:true});announce(local.locked?'请先验证访问密码。':local.connection==='connecting'?'正在读取访问设置，请稍候。':'无法确认访问设置，请重新连接。');}
 function activate(){if(sequence.phase>=2&&accessBlocked()){requireAccess();return;}impulse=1;if(sequence.playing){clickSound();refresh();return;}if(sequence.completed)restart(true);else start();}
-function jump(phase){if(accessBlocked()&&phase>2)phase=2;generation++;starting=false;stopAudio();cancelVoice();sequence.jump(phase);phaseAge=0;manualPause=false;impulse=.65;local.cancelLoad();refresh();announce('已切换到'+phases[phase][0]+'。点按画面播放。');}
+function jump(phase){if(accessBlocked()&&phase>2)phase=2;generation++;starting=false;stopAudio();cancelVoice();sequence.jump(phase);phaseAge=0;manualPause=false;impulse=.65;local.cancelLoad();refresh();announce('已切换到'+phaseCopy()[0]+'。点按画面播放。');}
 function skip(){if(accessBlocked()){requireAccess();return;}generation++;starting=false;stopAudio();cancelVoice();sequence.seek(total);phaseAge=0;manualPause=false;local.cancelLoad(false);refresh();announce('已跳过启动演出。');finishEmbedded('skip');}
 function finishEmbedded(reason){
  if(!window.DSHEmbed?.embedded||embeddedEnded)return embeddedEnded;
@@ -395,13 +417,14 @@ function syncSound(){voice()?.setMuted?.(muted);ui.sound.textContent=muted?'声�
 function syncTheme(){document.documentElement.dataset.theme=light?'light':'dark';ui.theme.textContent=light?'深色':'浅色';ui.theme.setAttribute('aria-label',light?'切换到深色档案':'切换到浅色档案');}
 function toggleSound(){if(audioUnavailable&&!voice())return;soundTouched=true;muted=!muted;syncSound();if(!muted){const current=generation;ensureAudio().then(ready=>{if(ready&&current===generation&&sequence.playing)scorePhase();});}}
 function settings(open){ui.controlPanel.hidden=!open;ui.settings.setAttribute('aria-expanded',String(open));ui.settings.setAttribute('aria-label',open?'关闭动画设置':'打开动画设置');if(open)enter(ui.controlPanel,[{clipPath:'inset(0 0 100%)'},{clipPath:'inset(0)'}],{duration:300});(open?ui.closeSettings:ui.settings).focus({preventScroll:true});}
-function point(event){const r=stage.getBoundingClientRect();pointer={x:Math.max(0,Math.min(1,(event.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(event.clientY-r.top)/r.height))};}
-stage.addEventListener('pointerdown',e=>{if(e.button!==0||pointerDown||e.target.closest('.inventory-list,.inventory-issues,#accessForm,#accessRetry'))return;point(e);pointerDown={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,moved:false};stage.setPointerCapture(e.pointerId);stage.focus({preventScroll:true});});
+function point(event,measure=false){const r=measure||!pointerBounds?(pointerBounds=stage.getBoundingClientRect()):pointerBounds;pointer={x:Math.max(0,Math.min(1,(event.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(event.clientY-r.top)/r.height))};}
+stage.addEventListener('pointerdown',e=>{if(e.button!==0||pointerDown||e.target.closest('.inventory-list,.inventory-issues,#accessForm,#accessRetry'))return;point(e,true);pointerDown={id:e.pointerId,x:e.clientX,y:e.clientY,lastX:e.clientX,moved:false};stage.setPointerCapture(e.pointerId);stage.focus({preventScroll:true});});
 stage.addEventListener('pointermove',e=>{point(e);if(pointerDown&&e.pointerId===pointerDown.id){if(Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)>6)pointerDown.moved=true;drag+=(e.clientX-pointerDown.lastX)/Math.max(1,width)*Math.PI*2;pointerDown.lastX=e.clientX;stage.classList.toggle('dragging',pointerDown.moved);}if(reducedMotion.matches)drawScene();});
 stage.addEventListener('pointerup',e=>{if(!pointerDown||e.pointerId!==pointerDown.id)return;const moved=pointerDown.moved;pointerDown=null;stage.classList.remove('dragging');if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId);if(!moved)activate();else{impulse=.45;refresh();}});
 stage.addEventListener('pointercancel',()=>{pointerDown=null;stage.classList.remove('dragging');});
 stage.addEventListener('pointerleave',()=>{if(!pointerDown)pointer={x:.5,y:.5};});
 ui.play.addEventListener('click',()=>sequence.playing?pause():activate());
+$('rxPrimary')?.addEventListener('click',activate);
 ui.skip.addEventListener('click',skip);ui.replay.addEventListener('click',()=>restart());
 ui.sound.addEventListener('click',toggleSound);
 ui.theme.addEventListener('click',()=>{light=!light;syncTheme();clearTransition();refresh();});
@@ -429,8 +452,9 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden){if(sequenc
 function motionChange(){document.body.classList.toggle('reduced',reducedMotion.matches);if(reducedMotion.matches){clearTransition();entryAnimations.forEach(animation=>animation.cancel());entryAnimations.clear();}refresh();}reducedMotion.addEventListener('change',motionChange);
 function renderIdentity(){identityView.render(sequence.phase===2?(visualStyle==='laterano'?sceneAge:manualPause?sequence.elapsed:Math.max(sequence.elapsed,phaseAge)):2,reducedMotion.matches);}
 function updateIdentity(){
- const name=ui.identityName.value.trim()||'OPERATOR',badge=ui.identityId.value.trim()||'DSH-0001';
- const mode=profileDirty?'UNSAVED / PREVIEW':local.connection==='local'?'LOCAL / SAVED':'OFFLINE / PREVIEW';
+ const connected=local.connection==='local';
+ const name=connected?(ui.identityName.value.trim()||local.profile.username):'未读取',badge=connected?(ui.identityId.value.trim()||local.profile.badge_id):'未读取';
+ const mode=connected?(profileDirty?'UNSAVED / PREVIEW':'LOCAL / SAVED'):'OFFLINE / PREVIEW';
  identityView.set([name,badge,mode]);renderIdentity();setText(ui.identityLine,'ID: '+badge,{kind:'type',scope:'global',delay:.3});layoutDirty=true;drawScene();
 }
 function editIdentity(){profileDirty=true;draftRevision++;local.saveMessage='';updateIdentity();renderLocal();}
@@ -486,16 +510,19 @@ ui.accessForm.addEventListener('submit',async event=>{
 ui.saveIdentity.addEventListener('click',async()=>{const revision=draftRevision;const saved=await local.save(ui.identityName.value,ui.identityId.value);if(saved)window.DSHEmbed?.profileChanged();if(saved&&revision===draftRevision){profileDirty=false;ui.identityName.value=local.profile.username;ui.identityId.value=local.profile.badge_id;updateIdentity();}renderLocal();announce(local.saveMessage);});
 async function reconnectLocal(){const connected=await local.connect(true);if(connected)await savePendingStyle();if(connected&&sequence.phase===3&&!sequence.completed){local.cancelLoad();beginLocalLoad();}renderLocal();refresh();}
 ui.connectLocal.addEventListener('click',reconnectLocal);ui.accessRetry.addEventListener('click',reconnectLocal);
-new ResizeObserver(resize).observe(pane);window.addEventListener('resize',resize);
+new ResizeObserver(resize).observe(pane);window.addEventListener('resize',resize);window.addEventListener('scroll',()=>{pointerBounds=null;},{passive:true});
 // A batch of changed text/page bounds produces one measurement and draw on the
 // next frame, rather than recursively repainting inside ResizeObserver delivery.
 const invalidateGeometry=()=>{layoutDirty=true;wake();};
-const geometryObserver=new ResizeObserver(invalidateGeometry);geometryObserver.observe($('stageCopy'));geometryObserver.observe($('stageHeading'));geometryObserver.observe(ui.identityCard);geometryObserver.observe(ui.inventoryPanel);geometryObserver.observe($('inventoryBook'));inventoryColumns.forEach(node=>geometryObserver.observe(node));
+const geometryObserver=new ResizeObserver(invalidateGeometry);geometryObserver.observe($('stageCopy'));if($('rxHeroMark'))geometryObserver.observe($('rxHeroMark'));geometryObserver.observe($('stageHeading'));geometryObserver.observe(ui.identityCard);geometryObserver.observe(ui.inventoryPanel);geometryObserver.observe($('inventoryBook'));inventoryColumns.forEach(node=>geometryObserver.observe(node));
 for(const node of [$('skillsHeading'),$('pluginsHeading'),ui.skillsList,ui.pluginsList])geometryObserver.observe(node);
 for(const list of [ui.skillsList,ui.pluginsList])list.addEventListener('scroll',invalidateGeometry,{passive:true});
 document.fonts?.ready.then(()=>{layoutDirty=true;refresh();});
- window.addEventListener('pagehide',()=>{generation++;starting=false;sequence.pause();manualPause=true;clearTransition();stopAudio();cancelVoice();local.dispose();cancelAnimationFrame(raf);raf=0;if(audio&&audio.state!=='closed')audio.close();});
-window.addEventListener('pageshow',event=>{if(event.persisted){ui.accessPassword.value='';local.resetVerification();lastFrame=performance.now();void local.connect(true).then(connected=>connected&&savePendingStyle());refresh();announce('预览已恢复。点按画面继续演出。');}});
+ window.addEventListener('pagehide',()=>{pageActive=false;generation++;starting=false;sequence.pause();manualPause=true;clearTransition();stopAudio();cancelVoice();local.dispose();cancelAnimationFrame(raf);raf=0;if(audio&&audio.state!=='closed')audio.close();});
+window.addEventListener('pageshow',event=>{pageActive=true;if(event.persisted){ui.accessPassword.value='';local.resetVerification();lastFrame=performance.now();void local.connect(true).then(connected=>connected&&savePendingStyle());refresh();announce('预览已恢复。点按画面继续演出。');}});
 window.DSHEmbed?.onSkipRequest(skip);
 syncTheme();applyVisualStyle(visualStyle);renderLocal();motionChange();resize();void local.connect().then(connected=>connected&&savePendingStyle());window.DSHEmbed?.ready();
+// Desktop opens with the film already moving. Identity and inventory gates
+// still use the same guarded interaction path. Web/static previews stay manual.
+if(window.DSHEmbed?.embedded&&new URLSearchParams(location.search).get('autostart')==='1')void start();
 })();

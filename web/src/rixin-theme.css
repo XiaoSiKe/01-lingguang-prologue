@@ -1,0 +1,144 @@
+/* Preserve the Rust profile's `rhine` ID while giving this edition its own identity. */
+.rixin-emblem{display:block;flex-shrink:0;background:#000 url('/rixin-logo.jpg') 50% 54% / 230% auto no-repeat}
+:root[data-visual-style="rhine"]{font-family:"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;color-scheme:dark;--paper:#0a0a0a;--ink:#f1f1f1;--line:#343434;--muted:#acacac;--surface:#151515;--sidebar:#101010;--soft:#202020;--blue:color-mix(in srgb,var(--ink) 70%,oklch(from var(--rixin-accent,#b8b8b8) l 0 h))!important;--message-font:15px}
+:root[data-visual-style="rhine"][data-theme="light"]{color-scheme:light;--paper:#f7f7f7;--ink:#171717;--line:#cdcdcd;--muted:#626262;--surface:#fff;--sidebar:#ededed;--soft:#e6e6e6}
+:root[data-visual-style="rhine"] ::selection{background:var(--ink);color:var(--paper)}
+:root[data-visual-style="rhine"] :is(input,textarea):focus{outline-color:var(--blue)}
+:root[data-visual-style="rhine"] :is(button,input,textarea,select){accent-color:var(--blue)}
+:root[data-visual-style="rhine"] :is(.sidebar,.workspace-header,.conversation-top,.composer-foot,.catalog,.sc-dialog){font-family:inherit}
+:root[data-visual-style="rhine"] .sidebar{width:266px;flex-basis:266px;padding:30px 20px 18px}
+:root[data-visual-style="rhine"] .brand{margin:0 2px 32px;gap:15px}
+:root[data-visual-style="rhine"] .brand>span{font-size:30px;line-height:1.15;font-weight:800;letter-spacing:.02em}
+:root[data-visual-style="rhine"] .brand>span>span{font:10px/1.8 "Helvetica Neue","PingFang SC",sans-serif;letter-spacing:.08em;margin-top:5px;color:var(--muted)}
+:root[data-visual-style="rhine"] .sidebar-section-label{font-size:10px;color:var(--muted)}
+:root[data-visual-style="rhine"] :is(.new-session,.outline-button,.solid-button,.catalog-toggle,.icon-button,.send-button,.catalog-search,.session-link,.composer){border-radius:0}
+:root[data-visual-style="rhine"] .new-session{height:48px;border-color:var(--line);font-size:14px;font-weight:650;position:relative}
+:root[data-visual-style="rhine"] .new-session:hover:not(:disabled){background:var(--soft);border-color:var(--muted)}
+:root[data-visual-style="rhine"] .session-list-heading{font-size:11px;color:var(--muted);padding-top:28px}
+:root[data-visual-style="rhine"] .session-link.active{background:var(--soft);border-color:var(--line)}
+:root[data-visual-style="rhine"] .session-info b{font-size:13px}
+:root[data-visual-style="rhine"] :is(.session-info small,.operator small,.settings-trigger,.keycap,.welcome-mark span,.welcome>p,.welcome-registry,.composer-context,.composer-foot,.message-label span,.tool-activity summary small,.system-note,.live-status,.loading-message){color:var(--muted)}
+:root[data-visual-style="rhine"] :is(.session-marker,.sidebar-bottom,.operator){border-color:var(--line)}
+:root[data-visual-style="rhine"] .operator-avatar{border:1px solid var(--line);background:var(--soft);border-radius:0}
+:root[data-visual-style="rhine"] .settings-trigger{min-height:44px;font-size:13px}
+:root[data-visual-style="rhine"] .workspace-header{height:84px}
+:root[data-visual-style="rhine"] .workspace-location b{font-size:14px;font-weight:650}
+:root[data-visual-style="rhine"] .catalog-toggle{min-height:40px;font-size:12px}
+:root[data-visual-style="rhine"] .catalog-toggle b{border-color:var(--line)}
+:root[data-visual-style="rhine"] .icon-button{min-width:40px;min-height:40px}
+:root[data-visual-style="rhine"] .icon-button:hover{background:var(--soft)}
+:root[data-visual-style="rhine"] .eyebrow{color:var(--muted)}
+:root[data-visual-style="rhine"] .welcome{padding:42px 12px}
+:root[data-visual-style="rhine"] .welcome-mark{right:2%;top:15%;gap:18px}
+:root[data-visual-style="rhine"] .welcome-mark .rixin-emblem{width:166px!important;height:166px!important}
+:root[data-visual-style="rhine"] .welcome-mark>span{font-size:9px;line-height:1.8}
+:root[data-visual-style="rhine"] .welcome>.eyebrow{font-size:10px;margin-bottom:24px;letter-spacing:.09em}
+:root[data-visual-style="rhine"] .welcome h1{max-width:66%;font-size:46px;font-weight:780;letter-spacing:-.025em;line-height:1.4;margin-bottom:26px}
+:root[data-visual-style="rhine"] .welcome>p{font-size:14px;line-height:2;max-width:70ch}
+:root[data-visual-style="rhine"] .welcome-registry{margin-top:36px;padding-top:22px;font-size:10px}
+:root[data-visual-style="rhine"] .welcome-registry b{color:var(--ink);font-weight:650}
+:root[data-visual-style="rhine"] .welcome-registry>button{min-height:44px;color:var(--ink);font-size:11px}
+:root[data-visual-style="rhine"] .composer{position:relative;border-color:var(--line);padding:20px 20px 14px;box-shadow:none}
+:root[data-visual-style="rhine"] .composer:focus-within{border-color:var(--ink);box-shadow:none}
+:root[data-visual-style="rhine"] :is(.composer::before,.composer::after){content:"";position:absolute;width:8px;height:8px;pointer-events:none;border-style:solid;border-color:var(--muted)}
+:root[data-visual-style="rhine"] .composer::before{left:-1px;top:-1px;border-width:1px 0 0 1px}
+:root[data-visual-style="rhine"] .composer::after{right:-1px;bottom:-1px;border-width:0 1px 1px 0}
+:root[data-visual-style="rhine"] .composer textarea{min-height:66px;line-height:1.8}
+:root[data-visual-style="rhine"] .composer textarea::placeholder{color:var(--muted)}
+:root[data-visual-style="rhine"] .composer-context{font-size:10px}
+:root[data-visual-style="rhine"] .composer-divider{background:var(--line)}
+:root[data-visual-style="rhine"] .send-button{min-width:42px;height:42px;background:var(--ink);color:var(--paper)}
+:root[data-visual-style="rhine"] .send-button svg{width:19px;height:19px}
+:root[data-visual-style="rhine"] .composer-foot{font-size:9px;line-height:1.6;gap:12px}
+:root[data-visual-style="rhine"] .message{border-color:var(--line)}
+:root[data-visual-style="rhine"] :is(.message-label,.message.user .message-label){color:var(--ink)}
+:root[data-visual-style="rhine"] :is(.message-body pre,.tool-activity,.approval,.message-body :not(pre)>code){border-color:var(--line);background:var(--surface)}
+:root[data-visual-style="rhine"] .message-body blockquote{border-left:1px solid var(--muted);color:var(--muted)}
+:root[data-visual-style="rhine"] :is(.tool-activity pre,.system-note pre,.approval pre,.tool-activity summary svg){color:var(--muted)}
+:root[data-visual-style="rhine"] :is(.status-dot,.activity-dot){border-radius:0;background:var(--ink)}
+:root[data-visual-style="rhine"] .status-dot.offline{background:transparent;border:1px solid var(--muted)}
+:root[data-visual-style="rhine"] .activity-dot.failed{background:transparent;border:1px solid var(--ink);transform:rotate(45deg)}
+:root[data-visual-style="rhine"] .activity-dot.working{background:var(--muted)}
+:root[data-visual-style="rhine"] .scan-line{background:var(--muted)}
+:root[data-visual-style="rhine"] :is(.notice,.notice.error){padding:16px 18px;border:1px solid var(--line);background:var(--soft);color:var(--ink)}
+:root[data-visual-style="rhine"] .model-warning{color:var(--muted)}
+:root[data-visual-style="rhine"] :is(.registry-item,.catalog-tabs,.catalog-note,.registry-symbol){border-color:var(--line)}
+:root[data-visual-style="rhine"] :is(.registry-name small,.registry-item summary>svg,.registry-detail,.registry-detail code,.catalog-note,.catalog-tabs button,.registry-symbol){color:var(--muted)}
+:root[data-visual-style="rhine"] .catalog-tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--ink)}
+:root[data-visual-style="rhine"] .catalog-search{background:var(--surface);min-height:42px}
+:root[data-visual-style="rhine"] .catalog{box-shadow:none}
+:root[data-visual-style="rhine"] .mobile-scrim{background:#0009}
+:root[data-visual-style="rhine"] :is(.sc-dialog,.sc-confirm){--sc-bg:var(--surface);--sc-nav:var(--sidebar);--sc-hover:var(--soft);--sc-selected:var(--soft);--sc-text:var(--ink);--sc-muted:var(--muted);--sc-line:var(--line);--sc-field:var(--paper);--sc-ink:var(--ink);--accent:var(--ink);--border:var(--line);--danger:var(--ink);--text-muted:var(--muted);font-family:inherit;border-radius:4px;box-shadow:none}
+.sc-style-rhine .sc-style-art{background:#080808;color:#f2f2f2}
+.sc-style-rhine .sc-style-art::before{background:#adadad;opacity:.3;height:1px}
+.sc-style-rhine .sc-style-art::after{border-color:#7775}
+.sc-style-rhine .sc-style-orbit{border-color:#7777}
+:root[data-visual-style="rhine"] .sc-color{border:1px solid var(--sc-muted)}
+:root[data-visual-style="rhine"] .sc-color svg{color:#101010;background:#eee;border-radius:50%}
+:root[data-visual-style="rhine"] .harness-notice{box-shadow:none;border-radius:2px}
+:root[data-visual-style="rhine"] .companion-sprite{filter:grayscale(1)}
+/* This is the real disconnected state, with no fabricated runtime or messages. */
+:root[data-visual-style="rhine"] .initial-connection{padding:48px 24px;text-align:center;gap:24px}
+:root[data-visual-style="rhine"] .initial-connection>.rixin-emblem{width:164px!important;height:164px!important;margin-bottom:10px}
+:root[data-visual-style="rhine"] .initial-connection h1{font-size:32px;letter-spacing:.06em;font-weight:800}
+:root[data-visual-style="rhine"] .initial-connection .connection-slogan{color:var(--ink);font-size:17px;line-height:1.9;text-wrap:balance}
+:root[data-visual-style="rhine"] .initial-connection p{color:var(--muted);max-width:58ch;line-height:1.8;overflow-wrap:anywhere}
+:root[data-visual-style="rhine"] .initial-connection .connection-detail{border-top:1px solid var(--line);padding-top:20px;max-width:480px;margin-top:12px}
+:root[data-visual-style="rhine"] .initial-connection .outline-button{min-height:46px;padding-inline:24px}
+:root[data-visual-style="rhine"] .access-entry{--access-ink:var(--ink);--access-line:var(--line);background:var(--paper);color:var(--ink)}
+:root[data-visual-style="rhine"] .access-entry::before{background:none}
+:root[data-visual-style="rhine"] .access-entry-frame{padding:36px 32px 24px;background:var(--surface);box-shadow:none}
+:root[data-visual-style="rhine"] :is(.access-entry-frame::before,.access-entry-frame::after){width:17px;height:17px;border-color:var(--ink);border-width:1px 0 0 1px}
+:root[data-visual-style="rhine"] .access-entry-frame::after{border-width:0 1px 1px 0}
+:root[data-visual-style="rhine"] .access-entry-brand{font-family:inherit;font-size:19px;font-weight:750;line-height:1.6}
+:root[data-visual-style="rhine"] .access-entry-brand small{color:var(--muted);font-size:9px}
+:root[data-visual-style="rhine"] .access-entry-frame h1{margin:30px 0 24px;font-weight:750}
+:root[data-visual-style="rhine"] .access-entry form input{background:var(--paper);color:var(--ink);border-color:var(--line);min-height:48px}
+:root[data-visual-style="rhine"] .access-entry form input:focus{outline-color:var(--ink)}
+:root[data-visual-style="rhine"] .access-entry form p{color:var(--muted)}
+:root[data-visual-style="rhine"] .access-entry-submit{background:var(--ink);color:var(--paper);min-height:48px;font-size:14px;font-weight:650}
+:root[data-visual-style="rhine"] .access-entry-reconnect{border:1px solid var(--line);background:var(--soft)}
+:root[data-visual-style="rhine"] .access-entry-reconnect button{color:var(--ink);border-color:var(--line);min-height:40px}
+:root[data-visual-style="rhine"] .access-entry form .access-entry-error{color:var(--ink);font-weight:650}
+:root[data-visual-style="rhine"][data-font-size="small"]{--message-font:13px}
+:root[data-visual-style="rhine"][data-font-size="large"]{--message-font:17px}
+@media(max-width:1120px){
+:root[data-visual-style="rhine"] .welcome-mark .rixin-emblem{width:128px!important;height:128px!important}
+:root[data-visual-style="rhine"] .welcome h1{font-size:38px}
+}
+@media(max-width:760px){
+:root[data-visual-style="rhine"] .sidebar{width:276px;flex-basis:276px}
+:root[data-visual-style="rhine"] .workspace-header{height:70px}
+:root[data-visual-style="rhine"] .catalog{top:70px}
+:root[data-visual-style="rhine"] .welcome{padding:24px 4px}
+:root[data-visual-style="rhine"] .welcome-mark{position:static;align-items:flex-start;margin-bottom:24px}
+:root[data-visual-style="rhine"] .welcome-mark .rixin-emblem{width:96px!important;height:96px!important}
+:root[data-visual-style="rhine"] .welcome-mark>span,:root[data-visual-style="rhine"] .welcome>.eyebrow{display:none}
+:root[data-visual-style="rhine"] .welcome h1{max-width:100%;font-size:34px;margin-bottom:18px}
+:root[data-visual-style="rhine"] .welcome>p{font-size:12px}
+:root[data-visual-style="rhine"] .welcome-registry{gap:14px;flex-wrap:wrap;margin-top:24px;padding-top:16px}
+:root[data-visual-style="rhine"] .welcome-registry>button{margin-left:0}
+:root[data-visual-style="rhine"] .composer{padding:16px 14px 10px}
+:root[data-visual-style="rhine"] .composer textarea{min-height:52px}
+:root[data-visual-style="rhine"] .composer-foot{font-size:8px;flex-wrap:wrap}
+:root[data-visual-style="rhine"] .access-entry-frame{padding:26px 22px 20px}
+:root[data-visual-style="rhine"] .access-entry-brand{font-size:16px;gap:16px}
+:root[data-visual-style="rhine"] .initial-connection h1{font-size:26px}
+:root[data-visual-style="rhine"] .initial-connection .connection-slogan{font-size:15px}
+}
+@media(max-height:700px) and (min-width:761px){
+:root[data-visual-style="rhine"] .welcome{padding-top:14px;padding-bottom:22px}
+:root[data-visual-style="rhine"] .welcome h1{font-size:36px;margin-bottom:18px}
+:root[data-visual-style="rhine"] .welcome-mark .rixin-emblem{width:120px!important;height:120px!important}
+:root[data-visual-style="rhine"] .welcome-registry{margin-top:20px;padding-top:14px}
+}
+@media(prefers-reduced-motion:reduce){:root[data-visual-style="rhine"] :is(.access-entry-frame,.access-entry-brand,.access-entry-frame h1,.access-entry-record,.access-entry form){animation:none}}
+
+:root[data-visual-style="rhine"] :is(.sc-danger,.sc-confirm-error,.sc-status.is-error,.sc-access-error,.cu-error,.cu-stale){color:var(--ink)}
+:root[data-visual-style="rhine"] .sc-status.is-error{background:var(--soft);border-top:1px solid var(--line)}
+:root[data-visual-style="rhine"] :is(.cu-recognition,.cu-error,.cu-notice){border:1px solid var(--line)}
+:root[data-visual-style="rhine"] :is(.cu-preview img,.cu-image-surface){background:var(--paper)}
+:root[data-visual-style="rhine"] .cu-independent-pointer svg{fill:#fff;stroke:#101010}
+:root[data-visual-style="rhine"] .cu-independent-pointer b{background:#fff;color:#101010}
+:root[data-visual-style="rhine"] .cu-independent-pointer::after{border-color:#fff}
+:root[data-visual-style="rhine"] .ext-tabs [aria-pressed="true"]{background:var(--ink);color:var(--paper)}

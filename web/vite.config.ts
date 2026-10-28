@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     proxy: Object.fromEntries(
-      ["/api", "/startup-", "/assets/voice", "/assets/fonts"].map((path) => [
+      ["/api", "/startup-", "/assets/voice", "/assets/fonts", "/assets/rixin-logo.jpg"].map((path) => [
         path,
         {
           target: backend,

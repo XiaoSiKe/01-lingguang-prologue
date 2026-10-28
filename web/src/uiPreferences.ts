@@ -17,7 +17,7 @@ export type UiPreferences = {
 };
 
 export const defaultUiPreferences: UiPreferences = {
-  theme: "system", accent: "#3679af", density: "comfortable",
+  theme: "dark", accent: "#b8b8b8", density: "comfortable",
   fontSize: "medium", sendKey: "enter", reducedMotion: "system",
   notifyOnCompletion: true, notifyOnApproval: true,
   notificationSound: false, desktopNotifications: false,
@@ -91,6 +91,7 @@ export function useInterfaceEffects() {
       root.dataset.fontSize = preferences.fontSize;
       root.dataset.motion = preferences.reducedMotion;
       root.style.setProperty("--blue", preferences.accent);
+      root.style.setProperty("--rixin-accent", preferences.accent);
     };
     apply();
     system.addEventListener("change", apply);

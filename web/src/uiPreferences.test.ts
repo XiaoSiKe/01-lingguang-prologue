@@ -20,7 +20,7 @@ describe("persisted interface preferences", () => {
     resetUiPreferences();
     vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new Error("blocked"); });
     expect(() => updateUiPreferences({theme:"dark"})).toThrow("blocked");
-    expect(readUiPreferences().theme).toBe("system");
+    expect(readUiPreferences().theme).toBe(defaultUiPreferences.theme);
   });
   it("preserves unrelated startup once flags when appearance changes or resets", () => {
     localStorage.setItem("dsh.web.startup.v1", JSON.stringify({next:true}));

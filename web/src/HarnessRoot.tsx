@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { App } from "./App";
+import { Emblem } from "./Emblem";
 import { StartupSurface } from "./StartupSurface";
 import { AccessEntry } from "./AccessEntry";
 import { accessStatus, bootstrap, errorText, isAbort } from "./api";
 import { consumeInitialPlayback } from "./preferences";
 import { consumeLaunchPlayback } from "./launchOverride";
 import { useInterfaceEffects } from "./uiPreferences";
-import { acceptVisualProfile, useVisualStyleEffects } from "./visualStyle";
+import { acceptVisualProfile, useVisualStyleEffects, useVisualStyle } from "./visualStyle";
 import type { AccessStatus, Bootstrap } from "./types";
 import "./access.css";
 
@@ -14,6 +15,7 @@ import "./access.css";
 export function HarnessRoot() {
   useInterfaceEffects();
   useVisualStyleEffects();
+  const isRixin = useVisualStyle() === "rhine";
   const [access, setAccess] = useState<AccessStatus>();
   const [boot, setBoot] = useState<Bootstrap>();
   const [play, setPlay] = useState(false);
@@ -134,8 +136,11 @@ export function HarnessRoot() {
         </div>}</>
       ) : (
         <div className="initial-connection" role={error ? "alert" : "status"}>
+          <Emblem size={164} />
+          <h1>{isRixin ? "零一 AI 日新社" : "DSH Harness"}</h1>
+          {isRixin && <p className="connection-slogan">从零到一，让技术进步成为每个人的机会！</p>}
           <span className="eyebrow">DSH / LOCAL WORKSPACE</span>
-          <p>{error || "正在连接本机 Harness…"}</p>
+          <p className="connection-detail">{error || "正在连接本机 Harness…"}</p>
           {error && <button className="outline-button" disabled={checking} onClick={() => void connect(true)}>重新连接</button>}
         </div>
       )}

@@ -67,7 +67,7 @@ function recordingContext() {
       },
     });
   }
-  for (const operation of ['beginPath', 'closePath', 'clip', 'fill', 'stroke', 'moveTo', 'lineTo', 'arc', 'rect', 'fillRect', 'strokeRect']) {
+  for (const operation of ['drawImage', 'beginPath', 'closePath', 'clip', 'fill', 'stroke', 'moveTo', 'lineTo', 'arc', 'rect', 'fillRect', 'strokeRect']) {
     context[operation] = (...args) => {
       finite(args.filter(value => typeof value === 'number'), operation);
       if (operation === 'arc') assert.ok(args[2] >= 0, 'arc radius must be nonnegative');
@@ -256,3 +256,26 @@ for (const [width, height] of [[0, 100], [100, 0], [-1, 100]]) {
 }
 draw(null, 1920, 1080, base);
 console.log(`PASS: ${rendered} deterministic real-renderer samples; finite canvas geometry, balanced state, reduced-motion stability, readable gates, truthful inventory circuits, and four-row measured layout alignment. Peak commands: ${maxCommands}/12000.`);
+
+// The branded renderer uses the same caller-state and finite-geometry contract.
+// Loading the actual module also exercises the real inventory fallback path.
+sandbox.Image = class { constructor() { this.complete = true; this.naturalWidth = 1254; } };
+vm.runInContext(fs.readFileSync(path.join(__dirname, '../docs/startup-rixin.js'), 'utf8'), sandbox, { filename: 'startup-rixin.js' });
+for (const [width, height] of [[1280,720], [390,844], [1024,560]]) {
+  for (let phase=0; phase<6; phase++) {
+    for (const progress of [0, .4, 1]) {
+      const sample = {phase, progress, textAge:progress*2, ambientTime:2, waiting:false, light:false, inventory:{status:'unavailable',skills:[],plugins:[],issues:[]}};
+      const actual=recordingContext();
+      sandbox.window.DSHRixin.draw(actual.context,width,height,sample);
+      actual.finish();
+      const still = [];
+      for(const ambientTime of [0,500]) {
+        const frame=recordingContext();
+        sandbox.window.DSHRixin.draw(frame.context,width,height,{...sample,ambientTime,reducedMotion:true});
+        still.push(frame.finish());
+      }
+      assert.equal(still[0],still[1],'branded reduced motion must not depend on the idle clock');
+    }
+  }
+}
+console.log('PASS: Zero → One renderer: desktop/mobile/short geometry, balanced canvas state, real inventory fallback, reduced-motion stability.');

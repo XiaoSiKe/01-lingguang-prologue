@@ -43,7 +43,7 @@ import { WorkspaceSettings } from "./WorkspaceSettings";
 import { AccessPasswordSettings } from "./AccessPasswordSettings";
 import { ComputerSettings } from "./ComputerSettings";
 import { VisualStyleChoices } from "./VisualStyleChoices";
-import { acceptVisualProfile, saveVisualStyle } from "./visualStyle";
+import { acceptVisualProfile, saveVisualStyle, useVisualStyle } from "./visualStyle";
 import {
   readPreferences,
   savePreferences,
@@ -408,6 +408,7 @@ export function SettingsCenter({
 }) {
   const { data, setData } = harness;
   const [ui, patchUi] = useUiPreferences();
+  const isRixin = useVisualStyle() === "rhine";
   const [selected, setSelected] = useState("general");
   const [search, setSearch] = useState("");
   const [remote, setRemote] = useState<SettingsSnapshot>();
@@ -957,14 +958,21 @@ export function SettingsCenter({
               </Row>
               <Row title="强调色">
                 <div className="sc-colors" role="group" aria-label="强调色">
-                  {[
+                  {(isRixin ? [
+                    ["#f4f4f4", "纯白"],
+                    ["#d4d4d4", "银白"],
+                    ["#b8b8b8", "银灰"],
+                    ["#999999", "中灰"],
+                    ["#777777", "石墨"],
+                    ["#555555", "深灰"],
+                  ] : [
                     ["#3679af", "冷蓝"],
                     ["#0f8b8d", "青绿"],
                     ["#7560c4", "紫色"],
                     ["#c2743a", "琥珀"],
                     ["#b85677", "玫瑰"],
                     ["#61656a", "石墨"],
-                  ].map(([color, label]) => (
+                  ]).map(([color, label]) => (
                     <button
                       key={color}
                       className="sc-color"

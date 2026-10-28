@@ -20,7 +20,7 @@ describe("Shared visual style", () => {
     vi.stubGlobal("__DSH_DESKTOP__", true);
     vi.stubGlobal("ipc", { postMessage });
     render(<Surface />);
-    const rhine = screen.getByRole("img", { name: "DSH DELTA CIRCUIT 部门徽章" }).innerHTML;
+    const rhine = screen.getByRole("img", { name: "零一 AI 日新社原始徽记" }).innerHTML;
     const favicon = document.querySelector<HTMLLinkElement>('link[data-dsh-favicon]')!;
     const rhineIcon = favicon.href;
     act(() => acceptVisualProfile({ visual_style: "laterano" }));
@@ -30,7 +30,7 @@ describe("Shared visual style", () => {
     expect(postMessage).toHaveBeenLastCalledWith(JSON.stringify({ event: "dsh-visual-style", visual_style: "laterano" }));
     expect(localStorage.getItem("dsh.visual_style")).toBeNull();
     act(() => acceptVisualProfile({}));
-    expect(screen.getByRole("img", { name: "DSH DELTA CIRCUIT 部门徽章" }).innerHTML).toBe(rhine);
+    expect(screen.getByRole("img", { name: "零一 AI 日新社原始徽记" }).innerHTML).toBe(rhine);
     expect(favicon.href).toBe(rhineIcon);
   });
 

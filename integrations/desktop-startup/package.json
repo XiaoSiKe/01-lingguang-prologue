@@ -1,0 +1,30 @@
+{
+  "name": "dsh-rixin-startup",
+  "version": "0.1.8",
+  "description": "零一·棱光序章：零一 AI 日新社社员专属 DSH 桌面开场动效",
+  "type": "module",
+  "main": "plugin.mjs",
+  "exports": {
+    ".": "./plugin.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "plugin.mjs",
+    "state.mjs",
+    "bridge.mjs",
+    "overlay.mjs",
+    "assets",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "license": "MIT",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

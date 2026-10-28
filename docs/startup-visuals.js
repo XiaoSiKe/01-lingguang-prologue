@@ -34,13 +34,14 @@
     const spin = (reduced?0:ambient*.46+time*1.35+drag*2.6)+channel*TAU/3;
     const pulse = reduced?1:1+Math.sin(ambient*1.65)*.025;
     const light = state.light !== false;
-    const pageBackground = light ? '#eeeae2' : '#0b1116';
+    const pageBackground = window.DSHRixin ? window.DSHRixin.palette(light).bg : light ? '#eeeae2' : '#0b1116';
     // The opening follows the selected theme; only its dark variant keeps
     // the original near-black stock and pale seal. Its wipe meets phase 1.
     const C = phase===0 && !light ? {bg:'#030506',ink:'#f2f4f2',soft:'#859397',line:'#28363d',accent:'#b5ced8',cool:'#82b3c5',ghostA:'#bd7174',ghostB:'#3a94b1'} : light ?
       {bg:pageBackground,ink:'#162126',soft:'#68767b',line:'#b9c3c3',accent:'#c5793f',cool:'#41889f',ghostA:'#b9696e',ghostB:'#2c819a'} :
       {bg:pageBackground,ink:'#e6edf0',soft:'#8497a1',line:'#2b424e',accent:'#82bfd2',cool:'#5596b2',ghostA:'#bd829d',ghostB:'#61b4d3'};
-    C.accent=(light?['#c5793f','#29848e','#8a668e']:['#82bfd2','#81c1a7','#b59ad9'])[channel];
+    if(window.DSHRixin)Object.assign(C,window.DSHRixin.palette(light));
+    else C.accent=(light?['#c5793f','#29848e','#8a668e']:['#82bfd2','#81c1a7','#b59ad9'])[channel];
     const identity = String(state.identity || 'OPERATOR').trim().slice(0,28) || 'OPERATOR';
     const inventory=state.inventory||{status:'idle',skills:[],plugins:[],issues:[]};
     // DOM and canvas share CSS-pixel measurements. Do not infer the plate's
@@ -87,7 +88,7 @@
     }
     function emblem(x,y,scale=1,assembly=1,fill=1,color=C.ink,alpha=1) {
       ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
-      emblemParts.forEach((contours,i)=>{
+      (window.DSHRixin?emblemParts.slice(0,3):emblemParts).forEach((contours,i)=>{
         const t=reduced?1:overshoot(part(assembly,i*.045,.78+i*.045));
         const side=i===0?-1:i===1?1:i%2?-1:1;
         ctx.save();ctx.translate(side*(1-t)*(i<2?250:340),(1-t)*(i<2?side*90:(i-3)*110));
@@ -96,24 +97,26 @@
         contours.forEach(points=>{points.forEach(([xx,yy],j)=>j?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy));ctx.closePath();});
         if(fill>0){ctx.fillStyle=color;ctx.fill('evenodd');}
         if(fill<.9){ctx.strokeStyle=color;ctx.lineWidth=1.1;ctx.stroke();}ctx.globalAlpha=1;
+        if(window.DSHRixin&&fill>0)window.DSHRixin.engravePart(ctx,i,C.bg,alpha*clamp(assembly));
         ctx.restore();
       });
+      window.DSHRixin?.decorateSeal(ctx,{assembly,alpha,fill,color,background:C.bg,reduced});
       ctx.restore();
     }
     function wordmark(x,y,h=50,tracking=1,color=C.ink,opacity=1) {
       text('DSH',x,y+h*.53,h*1.28,color,opacity,h*.10*tracking,'center',700);
     }
-    function glare(x,y,r,alpha,tint='255,254,245') {
+    function glare(x,y,r,alpha,tint='255,255,255') {
       if(alpha<=0)return;const g=ctx.createRadialGradient(x,y,0,x,y,Math.max(1,r));g.addColorStop(0,`rgba(${tint},${clamp(alpha)})`);g.addColorStop(.25,`rgba(${tint},${clamp(alpha*.76)})`);g.addColorStop(.58,`rgba(${tint},${clamp(alpha*.24)})`);g.addColorStop(1,`rgba(${tint},0)`);ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);
     }
     function streak(x,y,w,alpha) {
-      if(w<=0||alpha<=0)return;const g=ctx.createLinearGradient(x-w/2,y,x+w/2,y);g.addColorStop(0,'rgba(213,238,246,0)');g.addColorStop(.45,`rgba(235,249,255,${alpha*.52})`);g.addColorStop(.5,`rgba(255,255,255,${alpha})`);g.addColorStop(.55,`rgba(235,249,255,${alpha*.52})`);g.addColorStop(1,'rgba(213,238,246,0)');ctx.fillStyle=g;ctx.fillRect(x-w/2,y-1.5,w,3);ctx.globalAlpha=.2;ctx.fillRect(x-w/2,y-6,w,12);ctx.globalAlpha=1;
+      if(w<=0||alpha<=0)return;const g=ctx.createLinearGradient(x-w/2,y,x+w/2,y);g.addColorStop(0,'rgba(230,230,230,0)');g.addColorStop(.45,`rgba(244,244,244,${alpha*.52})`);g.addColorStop(.5,`rgba(255,255,255,${alpha})`);g.addColorStop(.55,`rgba(244,244,244,${alpha*.52})`);g.addColorStop(1,'rgba(230,230,230,0)');ctx.fillStyle=g;ctx.fillRect(x-w/2,y-1.5,w,3);ctx.globalAlpha=.2;ctx.fillRect(x-w/2,y-6,w,12);ctx.globalAlpha=1;
     }
     function paper() {
       // Fixed deterministic grain, with a gentle corner falloff rather than a gradient hero.
       for(let i=0;i<300;i++){const x=(hash(i+4)-.5)*W,y=(hash(i+807)-.5)*H;rect(x,y,.8+hash(i+390)*1.1,.65,C.ink,.022+hash(i+69)*.03);}
-      const shade=ctx.createRadialGradient(0,wy(.43),Math.min(W,H)*.17,0,wy(.43),Math.max(W,H)*.8);shade.addColorStop(0,'rgba(0,0,0,0)');shade.addColorStop(1,light?'rgba(82,80,70,.08)':'rgba(0,0,0,.3)');ctx.fillStyle=shade;ctx.fillRect(-W/2,-H/2,W,H);
-      emblem(wx(.80),wy(.38),3.4,1,0,C.ink,.027);
+      const shade=ctx.createRadialGradient(0,wy(.43),Math.min(W,H)*.17,0,wy(.43),Math.max(W,H)*.8);shade.addColorStop(0,'rgba(0,0,0,0)');shade.addColorStop(1,light?'rgba(80,80,80,.08)':'rgba(0,0,0,.3)');ctx.fillStyle=shade;ctx.fillRect(-W/2,-H/2,W,H);
+      if(!window.DSHRixin)emblem(wx(.80),wy(.38),3.4,1,0,C.ink,.027);
       const inset=38;[[-W/2+inset,-H/2+inset,1,1],[W/2-inset,-H/2+inset,-1,1],[-W/2+inset,H/2-inset,1,-1],[W/2-inset,H/2-inset,-1,-1]].forEach(([x,y,sx,sy])=>{line(x,y,x+sx*21,y,C.ink,.3,.75);line(x,y,x,y+sy*21,C.ink,.3,.75);});
       const y=wy(.76);line(wx(.055),y,wx(.095),y,C.soft,.45,.8);line(wx(.905),y,wx(.945),y,C.soft,.45,.8);
       text('DEPTH / ACCESS',wx(.08),wy(.72),10,C.soft,.65,1,'left',400,true);
@@ -132,7 +135,7 @@
       if(reduced)return;
       const t=fract(time*.72+ambient*.035),y=mix(wy(.15),wy(.80),t),x1=wx(.06),x2=wx(.94);
       line(x1,y,x2,y,C.cool,amount*.52,1.5);
-      const g=ctx.createLinearGradient(0,y-11,0,y+1);g.addColorStop(0,'rgba(79,136,158,0)');g.addColorStop(1,`rgba(79,136,158,${amount*.045})`);ctx.fillStyle=g;ctx.fillRect(x1,y-11,x2-x1,12);
+      const g=ctx.createLinearGradient(0,y-11,0,y+1);g.addColorStop(0,'rgba(158,158,158,0)');g.addColorStop(1,`rgba(158,158,158,${amount*.045})`);ctx.fillStyle=g;ctx.fillRect(x1,y-11,x2-x1,12);
     }
     const inGap = a => {a=((a%TAU)+TAU)%TAU;return a>Math.PI*.24&&a<Math.PI*.76;};
     function brokenArc(radius,rotation,length,color,alpha,lw) {
@@ -393,10 +396,12 @@
       deltaConstruction(px,cy+py,q,s);archiveMargins(.8);
       // The seal is the hero. The un-stretched signature has a clear subordinate role.
       emblem(px,cy+py,s,assembly,1,C.ink,1);
+      if(!window.DSHRixin){
       wordmark(0,cy+185,46,1.1,C.ink,stamp);
       line(-96,cy+255,96,cy+255,C.soft,.44*stamp,.8);
       text('HARNESS / INTELLIGENCE DIV.',0,cy+284,11,C.soft,stamp,2.8);
       text('深 潜 协 议',0,cy+320,17,C.ink,stamp,3.2);
+      }
       for(const side of [-1,1]){
         const x=side*Math.min(W*.35,345);
         line(x,cy-16,x,cy+16,C.soft,.55,1);line(x-7,cy,x+7,cy,C.soft,.55,1);
@@ -476,12 +481,14 @@
       sealMechanism(px*.4,cy+py*.4,s,p,.9);
       deltaConstruction(px*.4,cy+py*.4,p,s);
       if(p<.25)reticle((1-part(p,0,.25))*.8,.4);
-      text('WELCOME TO',0,cy-190+(1-enter)*-45,18,C.ink,enter,7);
+      if(!window.DSHRixin)text('WELCOME TO',0,cy-190+(1-enter)*-45,18,C.ink,enter,7);
       emblem(px*.4,cy+py*.4,s,part(p,0,.32),1,C.ink,1);
+      if(!window.DSHRixin){
       const boxY=cy+151;rect(-116,boxY,232,72,C.ink,enter);
       wordmark(0,boxY+16,40,1.1,light?'#fffcf5':C.bg,enter);
       text('HARNESS / INTELLIGENCE DIV.',0,cy+244,10,C.soft,enter,2.2);
       text('欢迎 '+identity+' 访问',0,cy+280,21,C.ink,enter,2);
+      }
       if(!reduced){
         if(p>.22&&p<.42)chromaticSeal(px*.4,cy+py*.4,s,Math.sin(part(p,.22,.42)*Math.PI)*18);
         impact(0,cy,part(p,.24,.63),p>.24&&p<.63?1:0);

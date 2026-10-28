@@ -24,16 +24,18 @@
       const frame = document.createElement('iframe');
       frame.title = 'DSH startup animation';
       frame.setAttribute('allow', 'autoplay');
-      const theme = document.documentElement?.dataset?.theme;
+      const desktop = location.protocol === 'dsh-app:' && location.hostname === 'app';
+      const theme = desktop ? 'dark' : document.documentElement?.dataset?.theme;
       const query = new URLSearchParams({ embed: '1', parentOrigin: location.origin, channel });
-      frame.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483647;background:#eeeae2';
+      if (desktop) { query.set('theme', 'dark'); query.set('style', 'rhine'); query.set('autostart', '1'); }
+      frame.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483647;background:#000';
       frame.src = '/__dsh_startup/startup-preview.html?' + query;
       // This parent-owned control still works if the child fails after ready.
       const exit = document.createElement('button');
       exit.type = 'button';
       exit.textContent = '返回 Harness';
       exit.setAttribute('aria-label', '退出可选开场，返回官方 Harness');
-      exit.style.cssText = `position:fixed;right:16px;top:16px;z-index:2147483647;min-height:36px;padding:7px 12px;border:1px solid ${theme === 'dark' ? '#70838c' : '#9aa8ae'};background:${theme === 'dark' ? '#0b1116' : '#eef2f5'};color:${theme === 'dark' ? '#f2f4f2' : '#162126'};font:12px/1.4 system-ui,sans-serif;cursor:pointer`;
+      exit.style.cssText = `position:fixed;right:16px;top:16px;z-index:2147483647;min-height:36px;padding:7px 12px;border:1px solid ${theme === 'dark' ? '#555' : '#aaa'};background:${theme === 'dark' ? '#080808' : '#f5f5f5'};color:${theme === 'dark' ? '#f2f2f2' : '#161616'};font:12px/1.4 system-ui,sans-serif;cursor:pointer`;
       const previousFocus = document.activeElement, inert = new Map();
       let deadline, observer, closed = false;
       const isolate = node => {

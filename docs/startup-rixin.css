@@ -1,0 +1,174 @@
+/* Zero → One. The film shares its clocks and access gates with the upstream host. */
+:root[data-visual-style=rhine] {
+  --ink: #f2f2f2; --soft: #a3a3a3; --accent: #fff; --line: #383838;
+  --panel: #111; --bg: #000;
+  --sans: "Helvetica Neue", "DSH Industrial SC", "PingFang SC", sans-serif;
+  --mono: "SFMono-Regular", Consolas, monospace;
+}
+:root[data-visual-style=rhine][data-theme=light] {
+  --ink: #161616; --soft: #595959; --accent: #000; --line: #b8b8b8;
+  --panel: #f5f5f5; --bg: #f5f5f5;
+}
+:root[data-visual-style=rhine] body.on-black {
+  --ink: #f2f2f2; --soft: #a3a3a3; --accent: #fff; --line: #383838; --panel: #111;
+}
+:root[data-visual-style=rhine][data-theme=light] body.on-black {
+  --ink: #161616; --soft: #595959; --accent: #000; --line: #b8b8b8; --panel: #f5f5f5;
+}
+.rx-logo { position: relative; display: block; overflow: hidden; flex: none; }
+.rx-logo img { position: absolute; width: 220%; height: 220%; max-width: none; left: 50%; top: 50%; transform: translate(-50%, -53%); }
+:root[data-visual-style=rhine] .masthead { inset: 32px 44px auto; align-items: center; }
+.rx-masthead { display: none; }
+:root[data-visual-style=rhine] .rx-masthead { display: flex; align-items: center; gap: 12px; }
+:root[data-visual-style=rhine] .brand > :not(.rx-masthead) { display: none; }
+.rx-masthead .rx-logo { width: 44px; height: 47px; mix-blend-mode: screen; }
+.rx-masthead strong { display: block; font: 700 19px/1.4 var(--sans); letter-spacing: .08em; }
+.rx-masthead span { display: block; color: var(--soft); font: 10px/1.5 var(--mono); letter-spacing: .12em; margin-top: 7px; }
+:root[data-visual-style=rhine] .settings-toggle { opacity: .8; border: 1px solid var(--line); min-width: 48px; min-height: 44px; font-size: 20px; }
+.rx-brand-stage { display: none; position: absolute; width: min(820px, 88%); left: 50%; top: 44%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 2; }
+:root[data-visual-style=rhine] body:is(.on-black,.finale) .rx-brand-stage { display: block; }
+.rx-hero-mark { width: 176px; height: 184px; margin: 0 auto 62px; mix-blend-mode: screen; }
+.rx-brand-en { margin: 0; color: var(--soft); font: 10px/1.6 var(--mono); letter-spacing: .28em; }
+.rx-brand-stage h2 { margin: 18px 0 20px; font-size: clamp(28px, 3.5vw, 46px); font-weight: 750; letter-spacing: .09em; text-indent: .09em; line-height: 1.35; }
+.rx-slogan { margin: 0 auto; max-width: 680px; font-size: clamp(18px, 1.9vw, 26px); font-weight: 700; line-height: 1.85; text-wrap: balance; letter-spacing: .035em; }
+.rx-slogan span { display: inline-block; }
+.rx-slogan span:first-child { font-weight: 800; }
+.rx-primary-wrap { display: none; position: absolute; z-index: 3; left: 50%; bottom: 13.5%; transform: translateX(-50%); text-align: center; width: min(360px, 85%); }
+:root[data-visual-style=rhine] .rx-primary-wrap { display: block; }
+.rx-primary { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 30px; width: 100%; min-height: 60px; padding: 17px 25px; border: 1px solid var(--ink); color: var(--ink); background: var(--bg); font-weight: 700; font-size: 16px; text-align: left; transition: background 180ms, color 180ms, transform 180ms; }
+.rx-primary::before,.rx-primary::after { content: ""; position: absolute; top: 50%; width: 4px; height: 15px; background: var(--ink); transform: translateY(-50%); transition: transform 180ms; }
+.rx-primary::before { left: -8px; }.rx-primary::after { right: -8px; }
+.rx-primary:hover:not(:disabled) { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.rx-primary:hover:not(:disabled)::before { transform: translate(3px,-50%); }.rx-primary:hover:not(:disabled)::after { transform: translate(-3px,-50%); }
+.rx-primary:active:not(:disabled) { transform: scale(.985); }
+.rx-primary:disabled { color: var(--soft); border-color: var(--line); opacity: 1; cursor: default; }
+.rx-primary:disabled::before,.rx-primary:disabled::after { background: var(--line); }
+.rx-primary-arrow { font: 20px var(--mono); }
+.rx-primary-hint { margin: 12px 0 0; color: var(--soft); font: 10px/1.5 var(--mono); letter-spacing: .04em; }
+.rx-footer { display: none; position: absolute; z-index: 2; left: 44px; right: 44px; bottom: 26px; align-items: flex-end; justify-content: space-between; gap: 25px; pointer-events: none; }
+:root[data-visual-style=rhine] .rx-footer { display: flex; }
+.rx-footer p { margin: 0; font: 10px/1.7 var(--mono); color: var(--soft); }
+.rx-footer b { display: block; color: var(--ink); font: 600 11px/1.6 var(--sans); letter-spacing: .1em; margin-bottom: 5px; }
+.rx-steps { display: flex; gap: 6px; margin-top: 10px; }
+.rx-steps i { width: 25px; height: 2px; background: var(--line); transition: background-color 180ms, transform 180ms; }
+.rx-steps i[data-past=true] { background: var(--soft); }.rx-steps i[data-current=true] { background: var(--ink); transform: scaleY(2); }
+.rx-footer-right { text-align: right; }
+:root[data-visual-style=rhine] .archive-subtitle { bottom: 7.5%; }
+:root[data-visual-style=rhine] .archive-subtitle span { font-size: 11px; }
+:root[data-visual-style=rhine] .archive-subtitle span:last-child { display: none; }
+:root[data-visual-style=rhine] body:is(.on-black,.finale) .archive-subtitle { display: none; }
+:root[data-visual-style=rhine] .stage-copy { top: 32%; max-width: 80%; }
+:root[data-visual-style=rhine] h1 { font-size: clamp(26px,3.1vw,42px); line-height: 1.4; font-weight: 750; letter-spacing: .12em; }
+:root[data-visual-style=rhine] .phase-kicker { color: var(--soft); font-size: 10px; letter-spacing: .16em; }
+:root[data-visual-style=rhine] .phase-note { font-size: 13px; line-height: 1.8; letter-spacing: .06em; }
+:root[data-visual-style=rhine] .phase-note::after { margin-top: 22px; width: 48px; }
+:root[data-visual-style=rhine] .identity-phase .stage-copy { top: 22%; left: 68%; width: min(400px,39%); max-width: none; transform: translate(-50%,0); text-align: left; }
+:root[data-visual-style=rhine] .identity-phase h1 { font-size: 29px; letter-spacing: .05em; text-indent: 0; }
+:root[data-visual-style=rhine] .identity-phase .phase-note { font-size: 12px; }
+:root[data-visual-style=rhine] .identity-phase .phase-note::after { display: none; }
+:root[data-visual-style=rhine] .identity-card { position: static; transform: none; margin-top: 28px; width: 100%; max-width: none; padding: 12px 22px; background: var(--panel); }
+:root[data-visual-style=rhine] .identity-card .identity-row { min-height: 47px; }
+:root[data-visual-style=rhine] .identity-card .identity-label { font-size: 12px; }
+:root[data-visual-style=rhine] .identity-card .identity-value { font-size: 13px; }
+:root[data-visual-style=rhine] .identity-card .identity-source { font-size: 9px; }
+:root[data-visual-style=rhine] .identity-card .access-feedback { font-size: 11px; }
+:root[data-visual-style=rhine] .identity-phase .rx-primary-wrap { left: 68%; width: min(400px,39%); }
+:root[data-visual-style=rhine] .inventory-phase .stage-copy { top: 24%; }
+:root[data-visual-style=rhine] .inventory-panel { top: 37%; bottom: 27%; left: 15%; right: 15%; }
+:root[data-visual-style=rhine] .inventory-heading b { font-size: 18px; letter-spacing: .07em; }
+:root[data-visual-style=rhine] .inventory-name { font-size: 13px; line-height: 1.6; }
+:root[data-visual-style=rhine] .inventory-source { font-size: 11px; line-height: 1.7; }
+:root[data-visual-style=rhine] .inventory-message { font-size: 11px; }
+:root[data-visual-style=rhine] .control-panel { background: var(--panel); box-shadow: none; right: 44px; top: 92px; max-height: calc(100dvh - 120px); padding: 25px; }
+:root[data-visual-style=rhine] .control-panel button { min-height: 40px; font-size: 12px; }
+:root[data-visual-style=rhine] .control-panel input { min-height: 40px; font-size: 12px; }
+:root[data-visual-style=rhine] .help { font-size: 11px; }
+:root[data-visual-style=rhine] .vignette { box-shadow: none; }
+:root[data-visual-style=rhine][data-theme=light] .rx-logo { background: #000; mix-blend-mode: normal; }
+@media (max-width: 760px) {
+  :root[data-visual-style=rhine] .masthead { inset: 20px 22px auto; }
+  .rx-masthead .rx-logo { width: 36px; height: 39px; }.rx-masthead { gap: 12px !important; }
+  .rx-masthead strong { font-size: 16px; }.rx-masthead span { font-size: 8px; letter-spacing: .06em; }
+  .rx-hero-mark { width: 130px; height: 138px; margin-bottom: 47px; }
+  .rx-brand-stage { top: 43%; width: 87%; }.rx-brand-stage h2 { margin-top: 16px; margin-bottom: 18px; font-size: 29px; }
+  .rx-brand-en { font-size: 8px; letter-spacing: .18em; }.rx-slogan { font-size: 18px; line-height: 1.85; max-width: 350px; }
+  .rx-footer { left: 22px; right: 22px; bottom: 20px; }.rx-footer-right { max-width: 150px; }.rx-footer p { font-size: 8px; }
+  .rx-footer b { font-size: 10px; }.rx-steps i { width: 18px; }.rx-steps { gap: 4px; }
+  .rx-primary-wrap { bottom: 16%; width: min(320px,80%); }.rx-primary { min-height: 57px; font-size: 16px; }
+  :root[data-visual-style=rhine] .stage-copy { width: 87%; max-width: 87%; top: 29%; }
+  :root[data-visual-style=rhine] .phase-note { font-size: 12px; }
+  :root[data-visual-style=rhine] .identity-phase .stage-copy { top: 22%; left: 50%; width: 85%; max-width: 390px; }
+  :root[data-visual-style=rhine] .identity-phase h1 { font-size: 26px; }
+  :root[data-visual-style=rhine] .identity-card { margin-top: 19px; padding: 8px 17px; }
+  :root[data-visual-style=rhine] .identity-card .identity-row { min-height: 43px; }
+  :root[data-visual-style=rhine] .identity-phase .rx-primary-wrap { left: 50%; width: min(320px,80%); bottom: 15%; }
+  :root[data-visual-style=rhine] .archive-subtitle { bottom: 9%; width: 84%; }
+  :root[data-visual-style=rhine] .archive-subtitle span { font-size: 10px; }
+  :root[data-visual-style=rhine] .inventory-phase .stage-copy { top: 24%; }
+  :root[data-visual-style=rhine] .inventory-phase h1 { font-size: 24px; letter-spacing: .03em; }
+  :root[data-visual-style=rhine] .inventory-panel { left: 8%; right: 8%; top: 36%; bottom: 30%; gap: 10px; }
+  :root[data-visual-style=rhine] .inventory-columns { gap: 20px; }
+  :root[data-visual-style=rhine] .inventory-heading b { font-size: 14px; }
+  :root[data-visual-style=rhine] .inventory-name { font-size: 11px; }
+  :root[data-visual-style=rhine] .inventory-source { font-size: 9px; }
+  :root[data-visual-style=rhine] .control-panel { top: 87px; right: 18px; width: calc(100% - 36px); max-height: calc(100dvh - 105px); }
+}
+@media (max-height: 650px) and (min-width: 761px) {
+  .rx-hero-mark { width: 100px; height: 106px; margin-bottom: 30px; }.rx-brand-stage { top: 43%; }
+  .rx-brand-stage h2 { font-size: 29px; margin: 10px 0; }.rx-slogan { font-size: 17px; }
+  .rx-primary-wrap { bottom: 14%; }.rx-primary { min-height: 48px; padding: 12px 20px; }.rx-primary-hint { display: none; }
+  :root[data-visual-style=rhine] .identity-phase .stage-copy { top: 23%; }
+  :root[data-visual-style=rhine] .identity-phase h1 { font-size: 24px; margin: 5px 0 7px; }
+  :root[data-visual-style=rhine] .identity-card { margin-top: 14px; padding: 5px 18px; }
+  :root[data-visual-style=rhine] .identity-card .identity-row { min-height: 31px; padding: 4px 0; }
+  :root[data-visual-style=rhine] .identity-card .identity-source { padding-top: 5px; }
+  :root[data-visual-style=rhine] .identity-card .access-feedback { min-height: 14px; font-size: 10px; }
+  :root[data-visual-style=rhine] .identity-phase .rx-primary-wrap { bottom: 12%; }
+  :root[data-visual-style=rhine] .archive-subtitle { display: none; }
+  .rx-footer { bottom: 16px; }
+}
+@media (max-height: 700px) and (max-width: 760px) {
+  .rx-hero-mark { width: 100px; height: 106px; margin-bottom: 34px; }
+  .rx-brand-stage h2 { font-size: 26px; margin: 12px 0; }.rx-slogan { font-size: 16px; }
+  .rx-primary-wrap { bottom: 17%; }.rx-primary-hint { font-size: 9px; }
+  :root[data-visual-style=rhine] .identity-phase .stage-copy { top: 20%; }
+  :root[data-visual-style=rhine] .identity-phase h1 { font-size: 23px; margin: 8px 0; }
+  :root[data-visual-style=rhine] .identity-phase .phase-note { display: none; }
+  :root[data-visual-style=rhine] .identity-card .identity-row { min-height: 34px; padding: 5px 0; }
+  :root[data-visual-style=rhine] .identity-phase .rx-primary-wrap { bottom: 17%; }
+  :root[data-visual-style=rhine] .archive-subtitle { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rx-primary,.rx-primary::before,.rx-primary::after,.rx-steps i { transition: none; }
+  .rx-primary:active:not(:disabled) { transform: none; }
+}
+
+/* DELTA: original triangular seal, straight rails and chamfered controls. */
+.rx-hero-mark { mix-blend-mode: normal; }
+:root[data-visual-style=rhine] .rx-primary { border-color: transparent; background: transparent; }
+.rx-button-frame { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; fill:none; stroke:currentColor; stroke-width:1.4; vector-effect:non-scaling-stroke; }
+.rx-button-inner { opacity:.3; stroke-width:.8; }
+:root[data-visual-style=rhine] .rx-primary:hover:not(:disabled) { background:transparent; color:var(--ink); }
+:root[data-visual-style=rhine] .rx-primary:hover:not(:disabled) .rx-button-frame { fill:color-mix(in srgb,var(--ink) 8%,transparent); }
+:root[data-visual-style=rhine] .rx-primary:disabled .rx-button-frame { stroke:var(--line); }
+:root[data-visual-style=rhine] .identity-card { clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px); }
+
+/* Original film: the authored Canvas choreography owns the graphic field. */
+:root[data-visual-style=rhine] .rx-hero-mark,
+:root[data-visual-style=rhine] .rx-brand-en { display:none; }
+:root[data-visual-style=rhine] .rx-brand-stage { top:calc(40% + min(100vw,100vh) * .174); transform:translateX(-50%); }
+:root[data-visual-style=rhine] .finale .rx-brand-stage { top:calc(42.5% + min(100vw,100vh) * .17); }
+:root[data-visual-style=rhine] .rx-brand-stage h2 { font-size:clamp(28px,3vw,38px); line-height:1.25; margin:0 0 16px; }
+:root[data-visual-style=rhine] .rx-slogan { font-size:clamp(18px,1.75vw,24px); line-height:1.65; }
+:root[data-visual-style=rhine] .identity-phase .stage-copy { left:50%;top:23%;width:min(380px,86%);max-width:none;transform:translate(-50%,0);text-align:center; }
+:root[data-visual-style=rhine] .identity-phase .rx-primary-wrap { left:50%;width:min(380px,80%); }
+@media(max-height:650px) and (min-width:761px){
+  :root[data-visual-style=rhine] .rx-brand-stage h2{font-size:28px;margin-bottom:12px;}
+  :root[data-visual-style=rhine] .rx-slogan{font-size:17px;line-height:1.55;}
+  :root[data-visual-style=rhine] .identity-phase .stage-copy{top:20%;}
+}
+@media(max-width:760px){
+  :root[data-visual-style=rhine] .rx-brand-stage h2{font-size:28px;margin-bottom:18px;}
+  :root[data-visual-style=rhine] .rx-slogan{font-size:18px;line-height:1.7;}
+  :root[data-visual-style=rhine] .identity-phase .stage-copy{top:20%;}
+}

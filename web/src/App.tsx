@@ -17,6 +17,7 @@ import { SettingsCenter } from "./SettingsCenter";
 import { useUiPreferences, shouldSend } from "./uiPreferences";
 import { unlockNotificationAudio } from "./notifications";
 import { useHarness } from "./useHarness";
+import { useVisualStyle } from "./visualStyle";
 import type { Activity, Bootstrap, Profile, SessionEvent } from "./types";
 
 const labelSession = (name: string | null, id: string) =>
@@ -223,6 +224,7 @@ export function App({
   latestProfile?: Profile;
 }) {
   const harness = useHarness(initialData, latestProfile);
+  const isRixin = useVisualStyle() === "rhine";
   const { data, sessions, currentId, snapshot, live } = harness;
   const [draft, setDraft] = useState("");
   const [sidebar, setSidebar] = useState(false);
@@ -299,10 +301,10 @@ export function App({
         />
       )}
       <aside className="sidebar">
-        <a className="brand" href="/" aria-label="DSH Harness 首页">
-          <Emblem size={44} />
+        <a className="brand" href="/" aria-label={isRixin ? "零一 AI 日新社工作台首页" : "DSH Harness 首页"}>
+          <Emblem size={isRixin ? 60 : 44} />
           <span>
-            DSH<span>DEEPSEEK HARNESS</span>
+            {isRixin ? "零一" : "DSH"}<span>{isRixin ? "AI 日新社 · HARNESS" : "DEEPSEEK HARNESS"}</span>
           </span>
         </a>
         <div className="sidebar-section-label">WORKSPACE / 01</div>
@@ -413,7 +415,7 @@ export function App({
                 : "NEW SESSION"}
             </span>
             <span className="subtle">
-              {live?.running ? live.status : "DEEP DIVE / 工作台"}
+              {live?.running ? live.status : (isRixin ? "零一 / 本机工作台" : "DEEP DIVE / 工作台")}
             </span>
           </div>
           {harness.connectionError && (
@@ -450,21 +452,21 @@ export function App({
                 <div className="welcome-mark">
                   <Emblem size={144} />
                   <span>
-                    ENGINEERING
+                    {isRixin ? "零一 AI 日新社" : "ENGINEERING"}
                     <br />
-                    DIVISION / DSH
+                    {isRixin ? "FROM ZERO TO ONE" : "DIVISION / DSH"}
                   </span>
                 </div>
                 <span className="eyebrow">YOUR LOCAL AGENT WORKSPACE</span>
                 <h1>
-                  让想法，
+                  {isRixin ? "从零到一，" : "让想法，"}
                   <br />
-                  开始运行。
+                  {isRixin ? "让想法运行。" : "开始运行。"}
                 </h1>
                 <p>
-                  描述目标，交给 Harness。
+                  {isRixin ? "从零到一，让技术进步成为每个人的机会！" : "描述目标，交给 Harness。"}
                   <br />
-                  会话、工具与工作区在本机协同。
+                  {isRixin ? "写下目标，从一个具体任务开始。" : "会话、工具与工作区在本机协同。"}
                 </p>
                 <div className="welcome-registry">
                   <span>

@@ -31,6 +31,7 @@ def stage_package(destination: Path) -> None:
         shutil.copytree(ROOT / "docs" / "assets" / name, assets / "assets" / name)
     shutil.copy2(ROOT / "docs" / "assets" / "dsh-emblem.svg", assets / "assets" / "dsh-emblem.svg")
     shutil.copy2(ROOT / "docs" / "assets" / "dsh-laterano-emblem.svg", assets / "assets" / "dsh-laterano-emblem.svg")
+    shutil.copy2(ROOT / "docs" / "assets" / "rixin-logo.jpg", assets / "assets" / "rixin-logo.jpg")
 
 
 def main() -> None:

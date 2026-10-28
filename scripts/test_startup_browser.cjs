@@ -142,12 +142,13 @@ function createHarness(options = {}) {
   class SilentAudioContext {
     constructor() {
       this.state = options.delayAudio ? 'suspended' : 'running'; this.sampleRate = 24000;
-      this.destination = audioNode(); contexts.push(this);
+      this.destination = audioNode(); this.buffersCreated=0; contexts.push(this);
     }
     get currentTime() { return now / 1000; }
     createGain() { return { ...audioNode(), gain: parameter() }; }
     createBiquadFilter() { return { ...audioNode(), frequency: parameter(), Q: parameter() }; }
     createBuffer(_channels, length) {
+      this.buffersCreated++;
       return { getChannelData() { return new Float32Array(length); } };
     }
     createOscillator() {
@@ -200,7 +201,7 @@ function createHarness(options = {}) {
   sandbox.window = sandbox;
   sandbox.parent = options.embedded ? { postMessage(message, origin) { messages.push({ message, origin }); } } : sandbox;
   vm.createContext(sandbox);
-  for (const filename of ['startup-sequence.js', 'startup-local.js', 'startup-identity.js', 'startup-text.js', 'startup-embed.js', 'startup-preview.js']) {
+  for (const filename of ['startup-sequence.js', 'startup-mechanics.js', 'startup-local.js', 'startup-identity.js', 'startup-text.js', 'startup-embed.js', 'startup-preview.js']) {
     vm.runInContext(fs.readFileSync(path.join(__dirname, '../docs', filename), 'utf8'), sandbox, { filename });
   }
 
@@ -457,6 +458,13 @@ async function main() {
   assert.ok(stale.element('skillsList').textContent.includes('repo-review'));
 
   const disconnected = createHarness({ fetch: async () => jsonResponse({}, 404) }); await settle();
+  assert.equal(disconnected.element('cardName').textContent, '未读取', 'offline identity must not invent an operator');
+  assert.equal(disconnected.element('cardId').textContent, '未读取', 'offline identity must not invent a badge');
+  assert.equal(disconnected.element('identityName').value, '');
+  assert.equal(disconnected.element('identityId').value, '');
+  assert.equal(disconnected.element('identityName').disabled, true);
+  assert.equal(disconnected.element('identityId').disabled, true);
+  assert.equal(disconnected.element('saveIdentity').disabled, true);
   assert.match(disconnected.element('connectionStatus').textContent, /dsh startup web/);
   disconnected.element('seek').value = '6.1'; disconnected.element('seek').emit('input'); disconnected.tap(); await settle(); disconnected.frame(5001);
   assert.equal(disconnected.drawStates.at(-1).phase, 4, 'offline users may continue the explicitly offline film');
@@ -560,6 +568,10 @@ async function main() {
   assert.equal(early.sources.length, 0, 'a late --silent profile must never leak opening sound');
 
   const embedSearch = '?embed=1&parentOrigin=http%3A%2F%2F127.0.0.1%3A8770&channel=channel-test-12345678';
+  const autoEmbed = createHarness({ embedded: true, search: embedSearch + '&autostart=1' }); await settle();
+  assert.equal(autoEmbed.element('play').textContent, '暂停', 'Desktop starts the film without an extra activation');
+  const staticAuto = createHarness({ search: '?autostart=1' }); await settle();
+  assert.equal(staticAuto.element('play').textContent, '开始', 'standalone previews retain their explicit start action');
   const embedded = createHarness({ embedded: true, search: embedSearch }); await settle();
   assert.equal(embedded.messages[0].message.type, 'ready');
   assert.equal(embedded.messages[0].origin, 'http://127.0.0.1:8770');

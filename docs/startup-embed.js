@@ -8,10 +8,10 @@
     const params = new URLSearchParams(location.search);
     const origin = new URL(params.get('parentOrigin'));
     const candidate = params.get('channel') || '';
+    const desktop = params.get('parentOrigin') === 'dsh-app://app' && origin.protocol === 'dsh-app:' && origin.hostname === 'app';
     if (parent !== window && params.get('embed') === '1' &&
-        ['http:', 'https:'].includes(origin.protocol) &&
-        origin.origin === params.get('parentOrigin') && /^[a-zA-Z0-9_-]{16,128}$/.test(candidate)) {
-      target = origin.origin;
+        ((['http:', 'https:'].includes(origin.protocol) && origin.origin === params.get('parentOrigin')) || desktop) && /^[a-zA-Z0-9_-]{16,128}$/.test(candidate)) {
+      target = desktop ? 'dsh-app://app' : origin.origin;
       channel = candidate;
     }
   } catch (_) { /* Invalid or missing embedding options keep standalone behavior. */ }

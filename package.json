@@ -1,0 +1,16 @@
+{
+  "name": "lingguang-prologue",
+  "version": "0.1.8",
+  "private": true,
+  "description": "零一·棱光序章：零一 AI 日新社专为社员制作的 DSH 开场动效",
+  "scripts": {
+    "start": "node scripts/preview_rixin.mjs",
+    "preview": "node scripts/preview_rixin.mjs",
+    "preview:native": "node scripts/preview_rixin.mjs",
+    "test": "node --test scripts/test_startup_*.cjs scripts/test_rixin_preview.cjs integrations/native-startup/test.mjs integrations/desktop-startup/test.mjs",
+    "package:desktop": "python3 scripts/install_desktop_startup.py --pack-only"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
