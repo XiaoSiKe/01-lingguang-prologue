@@ -3,6 +3,8 @@
 本插件是零一 AI 日新社专为社员制作的 DSH 开场动效，将三角几何与银灰社团徽记接入现有 DeepSeek Harness Desktop。
 使用桌面版自带的插件管理和 `webserver/index-inject` 接口，不修改应用的 app.asar。
 
+当前源码以官方 Desktop `0.2.2-rc.1` 为适配目标。 [官方版本说明](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.2-rc.1)
+
 安装后完全退出 DSH（macOS：Command+Q），再点击原来的 DeepSeek Harness 图标。
 开场完成或按 Esc 后回到原来的聊天界面。仅关窗口、再切回仍运行的进程不会重新开场。
 

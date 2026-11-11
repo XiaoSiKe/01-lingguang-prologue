@@ -41,13 +41,13 @@
 
 ## 🚀 社员快速开始
 
-在 **[Release 下载页](https://github.com/XiaoSiKe/01-lingguang-prologue/releases/latest)** 获取 `lingguang-prologue-v0.1.8.zip` 社员使用包，解压后进入目录。使用包已包含开场资源、预览入口与桌面安装脚本。
+下载 `lingguang-prologue-v*.zip` 社员使用包，解压后进入目录。使用包包含开场资源、预览入口与桌面安装脚本。 [Release 下载页](https://github.com/XiaoSiKe/01-lingguang-prologue/releases/latest)
 
 | 想做什么 | 从这里开始 |
 | :--- | :--- |
 | 🎬 先体验完整开场 | 解压后运行 `npm start`，或在 macOS 双击 `打开零一二创.command` |
 | 🖥️ 接入自己的 DSH 桌面版 | 按下方步骤运行桌面安装脚本 |
-| 🧩 使用已有插件集成流程 | 下载 Release 中的 `dsh-rixin-startup-0.1.8.tgz` |
+| 🧩 使用已有插件集成流程 | 下载 Release 中的 `dsh-rixin-startup-*.tgz` |
 
 ### 🎬 先看开场
 
@@ -61,12 +61,12 @@ npm start
 
 ### 🖥️ 接入已经安装的 DSH 桌面版
 
-当前桌面接入验证基于 **macOS / DeepSeek Harness Desktop 0.2.1-rc.3**。
+当前源码以 **DeepSeek Harness Desktop 0.2.2-rc.1** 为适配目标。已有 macOS 实机验证记录的版本为 **0.2.1-rc.3**。 [官方版本说明](https://github.com/deepseek-ai/deepseek-harness/releases/tag/dsh-v0.2.2-rc.1)
 
 | 准备项 | 要求 |
 | :--- | :--- |
 | DSH 桌面版 | 先打开一次以初始化桌面配置，再完全退出应用 |
-| Node.js 与 npm | Node.js **22.19+（22.x）或 24+**，并安装 npm |
+| Node.js 与 npm | 安装 npm，用于打包插件。插件由桌面版内置的 Node 运行 |
 | Python | Python 3 |
 
 在解压后的使用包或源码目录运行：
