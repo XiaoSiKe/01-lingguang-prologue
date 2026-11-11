@@ -14,15 +14,18 @@ const ACTIVE = 2, FAILED = 3;
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.json': 'application/json', '.wav': 'audio/wav', '.mp3': 'audio/mpeg', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
 const json = (res, status, value) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(value)); };
 
-export function localRequest(req, port, token, mutation = false, trustedDesktop = false) {
-  const hosts = [`127.0.0.1:${port}`, `localhost:${port}`, `[::1]:${port}`];
-  if (!hosts.includes(req.headers.host)) return false;
+export function localRequest(req, { port, protocol = 'http:' }, token, mutation = false, trustedDesktop = false) {
+  if (!port) return false;
+  const loopbacks = ['127.0.0.1', 'localhost', '[::1]'];
+  const host = req.headers.host;
+  const defaultPort = protocol === 'https:' ? 443 : 80;
+  if (!loopbacks.some(address => host === `${address}:${port}` || (port === defaultPort && host === address))) return false;
   if (req.socket?.remoteAddress && !['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(req.socket.remoteAddress)) return false;
-  if (req.headers.origin && req.headers.origin !== `http://${req.headers.host}`) return false;
+  const sameOrigin = req.headers.origin === new URL(`${protocol}//${host}`).origin;
+  if (req.headers.origin && !sameOrigin) return false;
   // Desktop's protocol handler authenticates the owned renderer and forwards its
   // Host cookie, removing Origin. This exception is used only AFTER the official
   // connection cookie has been verified in apply(); the per-launch token remains required.
-  const sameOrigin = req.headers.origin === `http://${req.headers.host}`;
   const desktopBridge = trustedDesktop && !req.headers.origin;
   return !mutation || ((sameOrigin || desktopBridge) && req.headers['x-dsh-token'] === token);
 }
@@ -88,15 +91,12 @@ export function apply(ctx, config = {}) {
     // The Desktop shell owns authentication for dsh-app://app requests. Require
     // its official Host cookie on assets as well as APIs; never trust a header
     // purporting to come from Desktop. Normal Web mode keeps its original checks.
-    if (desktop) {
+    const webServer = ctx.webServer;
+    if (!localRequest(req, webServer, token)) return json(res, 403, { error: 'Startup is available only on this local machine.' });
+    const path = new URL(req.url, `${webServer.protocol ?? 'http:'}//${req.headers.host}`).pathname.slice(PREFIX.length);
+    if (desktop || path === '/launch' || path.startsWith('/api/')) {
       const rejection = ctx.connection.requestRejection(req);
-      if (rejection !== undefined && rejection !== null && rejection !== false) return json(res, rejection, { error: 'Desktop Host authentication required.' });
-    }
-    if (!localRequest(req, ctx.webServer.port, token)) return json(res, 403, { error: 'Startup is available only on this local machine.' });
-    const path = new URL(req.url, `http://${req.headers.host}`).pathname.slice(PREFIX.length);
-    if (path === '/launch' || path.startsWith('/api/')) {
-      const rejection = ctx.connection.requestRejection(req);
-      if (rejection !== undefined) return json(res, rejection, { error: 'Open the official DSH login URL before reading startup data.' });
+      if (rejection !== undefined) return json(res, rejection, { error: desktop ? 'Desktop Host authentication required.' : 'Open the official DSH login URL before reading startup data.' });
     }
     try {
       if (path === '/launch' && req.method === 'GET') {
@@ -109,14 +109,14 @@ export function apply(ctx, config = {}) {
       }
       if (path === '/api/profile') {
         if (req.method === 'POST') {
-          if (!localRequest(req, ctx.webServer.port, token, true, desktop)) return json(res, 403, { error: 'Invalid local request.' });
+          if (!localRequest(req, webServer, token, true, desktop)) return json(res, 403, { error: 'Invalid local request.' });
           saveSettings(profileInput(await body(req)));
         } else if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed.' });
         const value = settings();
         return json(res, 200, { mode: 'local', token, username: value.username, badge_id: value.badge_id, visual_style: value.visual_style, sound: value.sound, workspace: process.cwd(), inventory_mode: 'mounted', runtime: 'native', runtime_label: 'NATIVE' });
       }
       if (path === '/api/load' && req.method === 'POST') {
-        if (!localRequest(req, ctx.webServer.port, token, true, desktop)) return json(res, 403, { error: 'Invalid local request.' });
+        if (!localRequest(req, webServer, token, true, desktop)) return json(res, 403, { error: 'Invalid local request.' });
         res.writeHead(200, { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'Cache-Control': 'no-store' });
         const controller = new AbortController();
         res.on('close', () => controller.abort());

@@ -33,7 +33,7 @@ def pack() -> Path:
 def backup(home: Path) -> Path:
     folder = home / "startup-animation" / "backups" / datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     folder.mkdir(parents=True, mode=0o700)
-    for name in ("package.json", "cordis.yml", "cordis.patch.yml", "pnpm-workspace.yaml", "pnpm-lock.yaml", "desktop-plugins.lock.json"):
+    for name in ("package.json", "cordis.yml", "cordis.patch.yml", "pnpm-workspace.yaml", "pnpm-lock.yaml", "desktop-plugins.lock.json", "compatibility.json"):
         source = home / "profiles" / "desktop" / name
         if source.is_file():
             shutil.copy2(source, folder / name)

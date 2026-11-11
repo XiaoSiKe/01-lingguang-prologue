@@ -41,15 +41,15 @@ def main() -> None:
     args = parser.parse_args()
     npm = shutil.which("npm.cmd") or shutil.which("npm")
     if not npm:
-        parser.error("Node.js 22.19+ or 24+ and npm are required.")
+        parser.error("npm is required for packaging and installation.")
     if not args.pack_only:
         node = shutil.which("node")
         if not node:
-            parser.error("Node.js 22.19+ or 24+ is required.")
+            parser.error("Node.js 24.9.0 or newer is required.")
         version = subprocess.run([node, "--version"], check=True, capture_output=True, text=True, encoding="utf-8").stdout.strip()
         major, minor = [int(part) for part in version.lstrip("v").split(".")[:2]]
-        if not ((major == 22 and minor >= 19) or major >= 24):
-            parser.error(f"Official DSH needs Node.js 22.19+ (22.x) or 24+, but PATH selects {version}. Update Node before installing; --pack-only can still create the portable tarball.")
+        if (major, minor) < (24, 9):
+            parser.error(f"Official DSH needs Node.js 24.9.0 or newer, but PATH selects {version}. Use a newer Node to install, or use --pack-only to create the tarball.")
     output = ROOT / "target" / "native-startup-package"
     output.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="dsh-native-package-") as temp:

@@ -169,11 +169,18 @@ test('native registry adapter reports only live fibers and true skill observatio
   assert.equal(result.issues.length, 2);
   assert.equal(events.at(-1).type, 'complete');
   const request = { headers: { host: '127.0.0.1:3000', origin: 'http://127.0.0.1:3000', 'x-dsh-token': 'token' }, socket: { remoteAddress: '127.0.0.1' } };
-  assert.equal(localRequest(request, 3000, 'token', true), true);
+  const http = { port: 3000 };
+  assert.equal(localRequest(request, http, 'token', true), true);
   request.headers.origin = 'https://attacker.example';
-  assert.equal(localRequest(request, 3000, 'token', true), false);
+  assert.equal(localRequest(request, http, 'token', true), false);
   request.headers.origin = 'http://127.0.0.1:3000'; request.headers.host = 'attacker.example';
-  assert.equal(localRequest(request, 3000, 'token'), false);
+  assert.equal(localRequest(request, http, 'token'), false);
+  const https = { port: 443, protocol: 'https:' };
+  request.headers.host = '127.0.0.1';
+  request.headers.origin = 'https://127.0.0.1';
+  assert.equal(localRequest(request, https, 'token', true), true);
+  request.headers.origin = 'http://127.0.0.1';
+  assert.equal(localRequest(request, https, 'token', true), false);
 });
 
 test('only matching iframe completion closes the native overlay', async () => {

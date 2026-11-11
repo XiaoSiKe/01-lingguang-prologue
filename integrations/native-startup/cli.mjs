@@ -17,7 +17,7 @@ export function prepareArguments(input, patch) {
 }
 export async function main(input = process.argv.slice(2)) {
   const [major, minor] = process.versions.node.split('.').map(Number);
-  if (!((major === 22 && minor >= 19) || major >= 24)) throw new Error(`Official DSH requires Node.js 22.19+ (22.x) or 24+; current runtime is ${process.versions.node}.`);
+  if (major < 24 || (major === 24 && minor < 9)) throw new Error(`Official DSH requires Node.js 24.9.0 or newer; current runtime is ${process.versions.node}.`);
   if (input[0] === 'startup') {
     const [_, action, ...rest] = input;
     if (action === 'next' || action === 'enabled') {

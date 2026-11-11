@@ -31,7 +31,7 @@ test('Desktop forwarding requires the official cookie and a per-launch mutation 
     assert.equal(saved.status,200);assert.equal(saved.body.username,'Desktop Test');
     assert.equal((await request('/api/profile',{token:profile.body.token,origin:'https://attacker.example',body:{username:'bad'}})).status,403);
     const bare={headers:{host:'127.0.0.1:3000','x-dsh-token':profile.body.token},socket:{remoteAddress:'127.0.0.1'}};
-    assert.equal(localRequest(bare,3000,profile.body.token,true),false,'Web keeps its same-origin requirement');
+    assert.equal(localRequest(bare,{port:3000},profile.body.token,true),false,'Web keeps its same-origin requirement');
   } finally {
     if(previous===undefined)delete process.env.DSH_HOME;else process.env.DSH_HOME=previous;
     rmSync(directory,{recursive:true,force:true});

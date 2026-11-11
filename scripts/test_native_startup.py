@@ -43,6 +43,7 @@ def main() -> None:
             if key.endswith("API_KEY") or key == "DSH_BUNDLED_SKILL_DIR":
                 del env[key]
         command = [args.node, str(native_cli)]
+        version = subprocess.run([*command, "--version"], env=env, cwd=workspace, check=True, capture_output=True, text=True).stdout.strip()
         subprocess.run([*command, "startup", "next", "on"], env=env, cwd=workspace, check=True, capture_output=True)
         subprocess.run([*command, "web", "--help"], env=env, cwd=workspace, check=True, capture_output=True)
         assert (home / "startup-animation" / "next.json").is_file(), "Help consumed the one-shot choice"
@@ -118,7 +119,7 @@ def main() -> None:
                     assert len(request(asset)) > 100
                 assert len(request("/assets/voice/phase-3-mounted.wav")) > 1000
                 assert len(request("/assets/fonts/dsh-industrial-sc.woff2")) > 1000
-                print(json.dumps({"passed": True, "official_version": "0.2.0-rc.2", "skills": len(inventory["skills"]), "mounted_plugins": len(inventory["plugins"]), "issues": len(inventory["issues"]), "fixture_workspace": str(workspace)}, ensure_ascii=False), flush=True)
+                print(json.dumps({"passed": True, "official_version": version, "skills": len(inventory["skills"]), "mounted_plugins": len(inventory["plugins"]), "issues": len(inventory["issues"]), "fixture_workspace": str(workspace)}, ensure_ascii=False), flush=True)
                 if args.serve:
                     args.report.parent.mkdir(parents=True, exist_ok=True)
                     args.report.write_text(json.dumps({"url": url, "workspace": str(workspace), "pid": process.pid}), encoding="utf-8")
